@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OASIS — The Complete Story</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --cream:#f5f0e8;
+  --gold:#c9a84c;
+  --dark:#0d0d0d;
+  --mid:#1a1a1a;
+  --charcoal:#2a2a2a;
+  --accent:#e8d5a3;
+  --red:#c0392b;
+  --text:#e8e0d0;
+  --muted:#999;
+}
+html{scroll-behavior:smooth;}
+body{background:var(--dark);color:var(--text);font-family:'Georgia',serif;line-height:1.7;}
+
+/* NAV */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  background:rgba(13,13,13,0.97);
+  border-bottom:1px solid var(--gold);
+  padding:0 2rem;
+  display:flex;align-items:center;justify-content:space-between;
+  height:56px;
+}
+nav .logo{
+  font-size:1.5rem;font-weight:bold;letter-spacing:0.3em;
+  color:var(--gold);text-transform:uppercase;text-decoration:none;
+}
+nav ul{list-style:none;display:flex;gap:1.5rem;}
+nav ul li a{
+  color:var(--muted);text-decoration:none;font-size:0.8rem;
+  letter-spacing:0.12em;text-transform:uppercase;transition:color 0.2s;
+}
+nav ul li a:hover{color:var(--gold);}
+
+/* HERO */
+#hero{
+  min-height:100vh;
+  background:linear-gradient(to bottom,#0d0d0d 0%,#1a1208 40%,#0d0d0d 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:6rem 2rem 4rem;
+  position:relative;overflow:hidden;
+}
+#hero::before{
+  content:'';position:absolute;top:0;left:0;right:0;bottom:0;
+  background:radial-gradient(ellipse at 50% 50%,rgba(201,168,76,0.08) 0%,transparent 70%);
+  pointer-events:none;
+}
+#hero .band-name{
+  font-size:clamp(5rem,15vw,12rem);
+  font-weight:900;letter-spacing:0.15em;
+  color:var(--gold);
+  text-shadow:0 0 60px rgba(201,168,76,0.3),0 4px 0 rgba(0,0,0,0.8);
+  line-height:1;margin-bottom:0.3em;
+  font-family:'Arial Black',sans-serif;
+}
+#hero .tagline{
+  font-size:1.2rem;color:var(--accent);letter-spacing:0.25em;
+  text-transform:uppercase;margin-bottom:2rem;
+}
+#hero .years{font-size:1rem;color:var(--muted);letter-spacing:0.2em;}
+#hero .scroll-hint{
+  position:absolute;bottom:2rem;
+  color:var(--muted);font-size:0.8rem;letter-spacing:0.2em;
+  text-transform:uppercase;animation:pulse 2s infinite;
+}
+@keyframes pulse{0%,100%{opacity:0.4;}50%{opacity:1;}}
+
+/* SECTIONS */
+section{padding:5rem 2rem;}
+.container{max-width:960px;margin:0 auto;}
+.wide-container{max-width:1200px;margin:0 auto;}
+
+h2.section-title{
+  font-size:2.5rem;color:var(--gold);letter-spacing:0.1em;
+  text-transform:uppercase;margin-bottom:0.3em;
+  border-bottom:1px solid var(--charcoal);padding-bottom:0.5em;
+}
+h3.sub-title{
+  font-size:1.4rem;color:var(--accent);margin:2rem 0 0.8rem;
+  letter-spacing:0.06em;
+}
+p{margin-bottom:1.2em;color:var(--text);font-size:1rem;}
+.muted{color:var(--muted);font-size:0.9rem;}
+
+/* HISTORY */
+#history{background:var(--dark);}
+.timeline-entry{
+  border-left:2px solid var(--charcoal);
+  padding:0 0 2.5rem 2rem;
+  margin-left:1rem;
+  position:relative;
+}
+.timeline-entry:last-child{border-left-color:transparent;}
+.timeline-entry::before{
+  content:'';
+  position:absolute;left:-7px;top:6px;
+  width:12px;height:12px;border-radius:50%;
+  background:var(--gold);border:2px solid var(--dark);
+}
+.timeline-year{
+  display:inline-block;
+  background:var(--gold);color:var(--dark);
+  font-size:0.75rem;font-weight:bold;letter-spacing:0.15em;
+  padding:0.2em 0.7em;margin-bottom:0.6em;text-transform:uppercase;
+}
+.timeline-heading{font-size:1.3rem;color:var(--cream);margin-bottom:0.6em;}
+
+/* DISCOGRAPHY */
+#discography{background:var(--mid);}
+.album-card{
+  background:var(--charcoal);
+  border:1px solid #333;
+  margin-bottom:3rem;
+  overflow:hidden;
+}
+.album-header{
+  background:linear-gradient(135deg,#1e1a10 0%,#2a2210 100%);
+  border-bottom:2px solid var(--gold);
+  padding:1.5rem 2rem;
+  display:flex;align-items:flex-start;gap:1.5rem;
+}
+.album-number{
+  font-size:3rem;font-weight:900;color:rgba(201,168,76,0.2);
+  line-height:1;flex-shrink:0;font-family:'Arial Black',sans-serif;
+}
+.album-meta h3{
+  font-size:1.6rem;color:var(--gold);margin-bottom:0.2em;
+}
+.album-meta .album-info{
+  color:var(--muted);font-size:0.85rem;letter-spacing:0.1em;
+}
+.album-body{padding:1.5rem 2rem;}
+.album-desc{margin-bottom:1.5rem;}
+.tracks-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;
+}
+@media(max-width:600px){.tracks-grid{grid-template-columns:1fr;}}
+.track-item{
+  border-left:3px solid var(--charcoal);
+  padding:0.5rem 0.8rem;
+  cursor:pointer;transition:border-color 0.2s,background 0.2s;
+  border-bottom:1px solid #222;
+}
+.track-item:hover{border-left-color:var(--gold);background:rgba(201,168,76,0.04);}
+.track-item.open{border-left-color:var(--gold);background:rgba(201,168,76,0.07);}
+.track-number{
+  font-size:0.7rem;color:var(--muted);margin-right:0.5em;
+  font-family:monospace;
+}
+.track-name{font-size:0.95rem;color:var(--cream);}
+.track-desc{
+  display:none;padding:0.6rem 0 0.2rem;
+  font-size:0.85rem;color:var(--muted);line-height:1.5;
+  grid-column:1/-1;
+}
+.track-desc.visible{display:block;}
+.track-meta{font-size:0.75rem;color:#666;margin-top:0.3em;}
+
+/* RELATED BANDS */
+#related{background:var(--dark);}
+.bands-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  gap:1.5rem;margin-top:2rem;
+}
+.band-card{
+  background:var(--charcoal);
+  border:1px solid #333;
+  padding:1.5rem;
+  transition:border-color 0.2s,transform 0.2s;
+  position:relative;overflow:hidden;
+}
+.band-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--gold),transparent);
+  opacity:0;transition:opacity 0.2s;
+}
+.band-card:hover{border-color:#555;transform:translateY(-2px);}
+.band-card:hover::before{opacity:1;}
+.band-card h4{color:var(--gold);font-size:1.1rem;margin-bottom:0.3em;}
+.band-card .band-years{color:var(--muted);font-size:0.75rem;letter-spacing:0.1em;margin-bottom:0.6em;}
+.band-card p{color:#bbb;font-size:0.85rem;margin:0;}
+.band-connection{
+  display:inline-block;margin-top:0.6em;
+  background:rgba(201,168,76,0.1);
+  color:var(--gold);font-size:0.7rem;
+  padding:0.15em 0.5em;letter-spacing:0.08em;
+}
+
+/* MEMBERS */
+#members{background:var(--mid);}
+.members-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:1.5rem;margin-top:2rem;
+}
+.member-card{
+  background:var(--charcoal);border:1px solid #333;padding:1.5rem;
+  text-align:center;
+}
+.member-card .member-name{font-size:1.1rem;color:var(--cream);margin-bottom:0.2em;}
+.member-card .member-role{font-size:0.8rem;color:var(--gold);letter-spacing:0.1em;margin-bottom:0.6em;}
+.member-card .member-years{font-size:0.75rem;color:var(--muted);margin-bottom:0.8em;}
+.member-card p{font-size:0.82rem;color:#aaa;margin:0;}
+
+/* SINGLES */
+#singles{background:var(--dark);}
+.singles-list{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:1rem;margin-top:2rem;
+}
+.single-item{
+  background:var(--charcoal);border:1px solid #333;
+  padding:1rem 1.2rem;
+  display:flex;align-items:center;gap:1rem;
+}
+.single-item .single-num{
+  font-size:1.4rem;font-weight:900;color:rgba(201,168,76,0.25);
+  font-family:'Arial Black',sans-serif;min-width:2rem;
+}
+.single-item .single-info h5{color:var(--cream);font-size:0.95rem;margin-bottom:0.1em;}
+.single-item .single-info span{color:var(--muted);font-size:0.75rem;}
+
+/* KNEBWORTH */
+#knebworth{
+  background:linear-gradient(to bottom,var(--mid),var(--dark));
+  text-align:center;padding:6rem 2rem;
+}
+#knebworth .big-stat{
+  font-size:clamp(3rem,10vw,7rem);font-weight:900;
+  color:var(--gold);font-family:'Arial Black',sans-serif;
+  line-height:1;
+}
+#knebworth .stat-label{color:var(--muted);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:2rem;}
+
+/* QUOTES */
+.quote-block{
+  border-left:4px solid var(--gold);
+  padding:1rem 1.5rem;
+  margin:2rem 0;
+  background:rgba(201,168,76,0.04);
+}
+.quote-block p{
+  font-style:italic;font-size:1.1rem;color:var(--accent);margin:0 0 0.4em;
+}
+.quote-block cite{font-size:0.8rem;color:var(--muted);}
+
+/* FOOTER */
+footer{
+  background:#080808;border-top:1px solid var(--charcoal);
+  padding:3rem 2rem;text-align:center;
+}
+footer .footer-logo{
+  font-size:2rem;font-weight:900;letter-spacing:0.3em;
+  color:rgba(201,168,76,0.3);margin-bottom:1rem;
+  font-family:'Arial Black',sans-serif;
+}
+footer p{color:var(--muted);font-size:0.8rem;}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:var(--dark);}
+::-webkit-scrollbar-thumb{background:var(--charcoal);}
+::-webkit-scrollbar-thumb:hover{background:#555;}
+
+@media(max-width:768px){
+  nav ul{display:none;}
+  .album-header{flex-direction:column;gap:0.8rem;}
+  .album-number{font-size:2rem;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#hero" class="logo">Oasis</a>
+  <ul>
+    <li><a href="#history">History</a></li>
+    <li><a href="#members">Members</a></li>
+    <li><a href="#discography">Albums</a></li>
+    <li><a href="#singles">Singles</a></li>
+    <li><a href="#knebworth">Knebworth</a></li>
+    <li><a href="#related">Related Bands</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="band-name">OASIS</div>
+  <div class="tagline">Rock 'n' Roll Stars from Manchester</div>
+  <div class="years">1991 — 2009 &nbsp;·&nbsp; Reunited 2025</div>
+  <div class="scroll-hint">&#9660; Scroll to explore</div>
+</section>
+
+<!-- HISTORY -->
+<section id="history">
+<div class="container">
+  <h2 class="section-title">History</h2>
+
+  <div class="timeline-entry">
+    <div class="timeline-year">1991–1993</div>
+    <div class="timeline-heading">Formation in Manchester</div>
+    <p>Oasis grew out of a band called The Rain, formed in the Burnage area of Manchester, England. The original lineup included Liam Gallagher on vocals, Paul "Bonehead" Arthurs on guitar, Paul McGuigan (known as Guigsy) on bass, and Tony McCarroll on drums. When Liam's older brother Noel Gallagher attended one of their rehearsals, he agreed to join on the condition that he would be lead guitarist and sole songwriter — an arrangement that would define the band's creative identity for the next two decades.</p>
+    <p>Noel had spent years as a roadie for the Inspiral Carpets, which gave him an invaluable behind-the-scenes education in the music industry. He brought with him a stockpile of songs he had written during those years on the road, and the new five-piece rapidly evolved into a tight, loud, guitar-driven outfit with obvious debts to The Beatles, The Who, The Kinks, T. Rex, and the Stone Roses. The group renamed themselves Oasis — a name Liam spotted on an Inspiral Carpets tour poster listing a venue called the Oasis Leisure Centre in Swindon.</p>
+    <p>Playing small Manchester venues throughout 1992 and into 1993, the band built a reputation for blistering live performances underpinned by Noel's melodically rich songwriting and Liam's extraordinary voice — a raw, nasal baritone that carried authority far beyond his years. Word spread quickly. A demo tape began circulating.</p>
+  </div>
+
+  <div class="timeline-entry">
+    <div class="timeline-year">1993</div>
+    <div class="timeline-heading">Signing to Creation Records</div>
+    <p>In May 1993, Oasis played a pivotal gig at King Tut's Wah Wah Hut in Glasgow — a show they reportedly crashed after not being officially added to the bill. Alan McGee, co-founder of Creation Records and one of the most important figures in British independent music, was in the audience. McGee later described watching Oasis that night as one of the greatest musical moments of his life. Within days, Oasis had a record deal with Creation.</p>
+    <p>Creation Records was the home of My Bloody Valentine, Primal Scream, and Teenage Fanclub, and it gave the band the creative freedom they needed. McGee became a ferocious advocate, and the band entered the studio with producer Mark Coyle to begin recording. Their first single, "Supersonic," was recorded and ready by early 1994, capturing in four minutes exactly what made Oasis so exciting: big riffs, euphoric melody, surreal Liam vocals, and an unmistakable sense of swagger.</p>
+  </div>
+
+  <div class="timeline-entry">
+    <div class="timeline-year">1994</div>
+    <div class="timeline-heading">Definitely Maybe — The Fastest-Selling Debut in UK History</div>
+    <p>"Supersonic" was released in April 1994 and reached number 31 on the UK charts — a respectable start. Three further singles — "Shakermaker," "Live Forever," and "Cigarettes &amp; Alcohol" — built extraordinary anticipation for the debut album. "Live Forever," in particular, resonated as a bold, anthemic retort to the nihilism of grunge, at a moment when Kurt Cobain's death had left an enormous emotional void in rock music.</p>
+    <p>Definitely Maybe was released on 29 August 1994. It entered the UK Albums Chart at number one and became the fastest-selling debut album in British chart history at that time, a record it held for several years. It was recorded primarily at Monnow Valley Studio in Wales, with additional sessions at Sawmills Studio in Cornwall and Loco Studio in Newport, produced by Owen Morris and Noel Gallagher. The record's tone was uncompromising: loud guitars, chest-out vocal performances from Liam, and lyrics suffused with dreamlike longing, working-class aspiration, and rock-star mythology.</p>
+    <p>Critically, the album was embraced as the opening salvo of the Britpop movement — a cultural phenomenon that positioned British guitar music as a proud, self-confident alternative to American grunge. Oasis were the movement's most commercially potent force, though they always resisted the "Britpop" label, preferring to see themselves as simply a great rock and roll band in the tradition of their heroes.</p>
+  </div>
+
+  <div class="timeline-entry">
+    <div class="timeline-year">1995</div>
+    <div class="timeline-heading">(What's the Story) Morning Glory? — A Phenomenon</div>
+    <p>In August 1995, the Blur versus Oasis "chart battle" became a defining moment in British pop culture. Both bands released singles on the same day — Blur with "Country House" and Oasis with "Roll With It" — in what was treated by the media as a proxy war between the south and north of England, between art-school irony and working-class sincerity. Blur won the chart position, but Oasis won the cultural argument: their album, released that October, obliterated all competition.</p>
+    <p>(What's the Story) Morning Glory? was recorded at Rockfield Studio in Wales with producer Owen Morris and released on 2 October 1995. It went to number one and remained in the chart for the better part of two years. It contained two of the most performed songs in British musical history — "Wonderwall" and "Don't Look Back in Anger" — alongside the euphoric "Champagne Supernova," the menacing opener "Hello," and a string of further near-perfect rock songs. The album became a generational touchstone, the sound of a country's cultural self-confidence at a specific and unrepeatable historical moment.</p>
+    <p>The album sold over 22 million copies worldwide. In Britain, it is consistently ranked among the greatest albums ever made, regularly polling at or near the top of listener surveys. For many people who were teenagers in the mid-1990s, it is the defining album of their lives.</p>
+  </div>
+
+  <div class="timeline-entry">
+    <div class="timeline-year">1996</div>
+    <div class="timeline-heading">Knebworth — The Biggest Rock Concert in UK History</div>
+    <p>On 10 and 11 August 1996, Oasis played two consecutive nights at Knebworth Park in Hertfordshire — a show that has become the stuff of legend. An estimated 2.5 million people applied for tickets; 250,000 attended across both nights. The shows were supported by Manic Street Preachers, The Prodigy, The Charlatans, and others. Liam Gallagher, now 23, stood in front of the largest crowd a British band had played to in decades and delivered a performance that cemented Oasis as the biggest band in the country — arguably in the world at that moment.</p>
+    <p>The Knebworth concerts represented the absolute peak of Britpop. But they also marked a turning point. In hindsight, many who were there or involved with the band describe the shows as the end of something as much as the summit of it. The world was about to become harder and more complicated for Oasis.</p>
+  </div>
+
+  <div class="timeline-entry">
+    <div class="timeline-year">1997</div>
+    <div class="timeline-heading">Be Here Now — The Big Comedown</div>
+    <p>Be Here Now was the most anticipated album in British music history. Pre-orders were enormous. When it was released on 21 August 1997, it sold 696,000 copies in its first week — a UK record at the time. It entered the charts at number one and briefly appeared to be the culmination of everything the band had been building toward.</p>
+    <p>But Be Here Now was also an album born of excess. The band had spent the two years since Morning Glory in a cocaine-fuelled haze of celebrity, and the record reflected it: the songs were overlong, the production was thunderously dense, the guitars piled on top of each other until they became a wall of undifferentiated noise. Owen Morris's production choices — enormous amounts of overdubs, clipped transients, a maximalist approach that left no space anywhere in the mix — were later criticised by Noel Gallagher himself as a mistake.</p>
+    <p>Critical opinion, initially warm, soured within months. Oasis were beginning to be perceived as bloated and self-aggrandising. The cultural mood, too, was shifting: the optimism of early Britpop was giving way to a cooler, more ironic sensibility, and a new generation of American acts — Radiohead's OK Computer, released the same summer — seemed to be addressing the late 1990s more honestly. Be Here Now has since been partially rehabilitated, with commentators acknowledging its genuine melodic highlights while accepting that it marked the beginning of the band's commercial and critical decline.</p>
+  </div>
+
+  <div class="timeline-entry">
+    <div class="timeline-year">1998–1999</div>
+    <div class="timeline-heading">Personnel Changes and The Masterplan</div>
+    <p>The period following Be Here Now saw significant upheaval. Drummer Tony McCarroll had already been replaced by Alan White in 1995. Now bassist Paul McGuigan departed in 1999 due to stress-related health issues, replaced by Andy Bell — formerly of Ride — in an inspired piece of casting that injected new creative energy. Guitarist Bonehead (Paul Arthurs) also departed in 1999, never fully explaining his reasons publicly.</p>
+    <p>In 1998, Creation Records released The Masterplan, a B-sides compilation that became a minor revelation. Tracks like "Acquiesce," "The Masterplan," "Half the World Away," "Talk Tonight," and "Rockin' Chair" demonstrated that Noel had been consistently delivering exceptional songs that hadn't even made the album cuts — further reinforcing his reputation as one of the most naturally gifted melodists of his generation. Many fans and critics consider The Masterplan essential listening, ranking some of its tracks among the best things Oasis ever recorded.</p>
+  </div>
+
+  <div class="timeline-entry">
+    <div class="timeline-year">2000–2002</div>
+    <div class="timeline-heading">Standing on the Shoulder of Giants and Heathen Chemistry</div>
+    <p>Standing on the Shoulder of Giants (2000) was Oasis's most radical stylistic departure. Recorded in Paris and influenced by the psychedelic experimentation then in vogue in British music, it featured drum loops, backward guitar, and a darker, more introspective mood than anything the band had previously released. The album received mixed reviews — some welcomed the evolution; others missed the direct melodicism of the early records — but it produced the fine singles "Go Let It Out" and "Who Feels Love?"</p>
+    <p>Gem Archer and Andy Bell, now full members, contributed significantly to Heathen Chemistry (2002), which saw Liam and Gem offered songwriting credits for the first time. The album had a looser, warmer quality than its predecessors. "The Hindu Times" was a barnstorming lead single, and "Stop Crying Your Heart Out" became a beloved ballad. Liam's "Songbird" — a delicate acoustic love song to his then-wife Nicole Appleton — was a charming surprise from a vocalist more often associated with swagger than tenderness.</p>
+  </div>
+
+  <div class="timeline-entry">
+    <div class="timeline-year">2005</div>
+    <div class="timeline-heading">Don't Believe the Truth — The Critical Comeback</div>
+    <p>Don't Believe the Truth (2005) was widely regarded as Oasis's best album since Morning Glory. The critical and commercial reception was the warmest the band had received in nearly a decade. "Lyla" was a furious, exciting lead single; "The Importance of Being Idle" was a playful, melodically perfect piece of pastiche that reached number one; "Let There Be Love" was a gorgeous, understated closer.</p>
+    <p>For the first time, multiple band members contributed songs to a single album — Liam wrote "Love Like a Bomb," Gem wrote "A Bell Will Ring" and "Keep the Dream Alive," and Andy Bell contributed "Turn Up the Sun." This democratic approach gave the record a variety and freshness that had been absent for years. Noel himself seemed re-energised, delivering some of his most focused and economical writing since the mid-1990s.</p>
+  </div>
+
+  <div class="timeline-entry">
+    <div class="timeline-year">2008–2009</div>
+    <div class="timeline-heading">Dig Out Your Soul and the Split</div>
+    <p>Dig Out Your Soul (2008) was a psychedelic-tinged record, heavier and more unified in vision than its immediate predecessors. "The Shock of the Lightning" was the lead single — a pile-driving, fuzz-drenched rocker. "Falling Down" was a lysergic, orchestral piece. "I'm Outta Time" was one of Liam's finest vocal performances on record. The album received strong reviews and performed well commercially, suggesting that Oasis had arrived at a new creative equilibrium.</p>
+    <p>On 28 August 2009, before a scheduled headline slot at the Rock en Seine festival in Paris, Noel Gallagher announced his resignation from Oasis. In his statement, he said he could no longer work with Liam, explaining: "It's with some sadness and great relief... I quit Oasis tonight. People will write and say what they like, but I simply could not go on working with Liam a day longer." The immediate cause was reportedly a backstage altercation before the show, though tensions had been building for years — most of Oasis's life as a band had been punctuated by furious brotherly rows, temporary walk-outs, and threats of dissolution. This time, it was permanent.</p>
+    <p>The split sent shockwaves through British music. Oasis had been a constant presence in the cultural landscape for fifteen years. Without them, something irreplaceable disappeared from popular music.</p>
+  </div>
+
+  <div class="timeline-entry">
+    <div class="timeline-year">2009–2024</div>
+    <div class="timeline-heading">Solo Careers: Beady Eye and High Flying Birds</div>
+    <p>Liam formed Beady Eye with Gem Archer, Andy Bell, and Chris Sharrock, releasing two albums — Different Gear, Still Speeding (2011) and BE (2013) — before dissolving the band in 2014. He subsequently launched a hugely successful solo career, releasing As You Were (2017), Why Me? Why Not. (2019), and C'mon You Know (2022), the latter debuting at number one. His 2022 concert at Knebworth — recreating the 1996 shows as a solo artist — sold out instantly and was received as a triumphant homecoming.</p>
+    <p>Noel formed Noel Gallagher's High Flying Birds and released a self-titled debut in 2011, followed by Chasing Yesterday (2015) and Who Built the Moon? (2017), the latter a more experimental, disco-influenced record produced by David Holmes. Back the Way We Came: Vol. 1 (2011–2021) collected highlights from the decade. Noel's solo work was consistently praised for its craftsmanship and melodic integrity, though some critics noted that it lacked the volcanic energy Liam's voice had provided.</p>
+    <p>Despite occasional tantalising rumours and social media spats that kept the story alive, throughout this period the brothers publicly showed no signs of reconciliation. The question "will Oasis reunite?" became one of popular culture's most-asked hypotheticals.</p>
+  </div>
+
+  <div class="timeline-entry">
+    <div class="timeline-year">2025</div>
+    <div class="timeline-heading">Reunion</div>
+    <p>On 27 August 2024, Oasis announced a reunion tour for 2025, with dates across the UK and Ireland, later expanded to include Europe, North America, Australia, and other territories. The announcement broke records for ticket demand, with millions of fans attempting to purchase seats in the first hours of sale. The Gallagher brothers released a joint statement describing their decision simply: it was time.</p>
+    <p>The 2025 reunion marked the sixteenth anniversary of their split and confirmed what many had suspected — that the story of Oasis was never really over. The band that defined a generation of British music, that packed Knebworth with a quarter of a million people and filled every working-class bedroom in Britain with the sound of guitars and ambition, was back.</p>
+  </div>
+
+</div>
+</section>
+
+<!-- MEMBERS -->
+<section id="members">
+<div class="container">
+  <h2 class="section-title">Band Members</h2>
+  <div class="members-grid">
+
+    <div class="member-card">
+      <div class="member-name">Liam Gallagher</div>
+      <div class="member-role">Lead Vocals</div>
+      <div class="member-years">1991 – 2009 (founding member)</div>
+      <p>Born 21 September 1972 in Burnage, Manchester. Liam's voice — a raw, sneering, nasal delivery with an underlying emotional vulnerability — is one of the most distinctive instruments in rock history. He formed The Rain with his schoolmates, which became Oasis when Noel joined. As a frontman he was incomparable: arrogant, electric, and magnetic in equal measure.</p>
+    </div>
+
+    <div class="member-card">
+      <div class="member-name">Noel Gallagher</div>
+      <div class="member-role">Lead Guitar, Vocals, Songwriter</div>
+      <div class="member-years">1991 – 2009 (founding member)</div>
+      <p>Born 29 May 1967 in Longsight, Manchester. The band's primary creative engine, Noel wrote almost the entire Oasis catalogue. His melodic gifts are widely acknowledged as exceptional — a rare ability to write songs that feel simultaneously brand new and like they've existed forever. As lead guitarist his style was classic and powerful rather than technically complex.</p>
+    </div>
+
+    <div class="member-card">
+      <div class="member-name">Paul "Bonehead" Arthurs</div>
+      <div class="member-role">Rhythm Guitar, Keyboards</div>
+      <div class="member-years">1991 – 1999 (founding member)</div>
+      <p>Born 23 June 1965 in Manchester. One of the original members of The Rain and a founding member of Oasis. Bonehead's rhythm guitar playing underpinned the classic Oasis sound across the first three studio albums. He departed in 1999, citing personal reasons, and later supported Liam's 2022 solo Knebworth shows — suggesting a genuine reconciliation with that chapter of his life.</p>
+    </div>
+
+    <div class="member-card">
+      <div class="member-name">Paul "Guigsy" McGuigan</div>
+      <div class="member-role">Bass Guitar</div>
+      <div class="member-years">1991 – 1999 (founding member)</div>
+      <p>Born 9 May 1971 in Manchester. Another original member of The Rain, Guigsy provided the deep, locked-in bass lines that gave the early Oasis records their physical heft. He briefly left the band during the Be Here Now recording sessions due to stress-related illness, and departed permanently in 1999. He has remained largely out of the public eye since then.</p>
+    </div>
+
+    <div class="member-card">
+      <div class="member-name">Tony McCarroll</div>
+      <div class="member-role">Drums</div>
+      <div class="member-years">1991 – 1995</div>
+      <p>Born 4 June 1971 in Manchester. Tony was the original drummer and a founding member of The Rain. He played on Definitely Maybe and was replaced by Alan White in 1995, reportedly because the band felt a more technically accomplished drummer was needed for the rigours of their expanding live schedule. He later sued the band over royalties.</p>
+    </div>
+
+    <div class="member-card">
+      <div class="member-name">Alan White</div>
+      <div class="member-role">Drums</div>
+      <div class="member-years">1995 – 2004</div>
+      <p>Born 26 May 1972 in London. Alan replaced Tony McCarroll and played on (What's the Story) Morning Glory?, Be Here Now, Standing on the Shoulder of Giants, and Heathen Chemistry. A solid, powerful drummer, his playing on the Knebworth concerts is a defining element of those recordings. He departed in 2004 due to a wrist injury.</p>
+    </div>
+
+    <div class="member-card">
+      <div class="member-name">Gem Archer</div>
+      <div class="member-role">Guitar</div>
+      <div class="member-years">1999 – 2009</div>
+      <p>Born 7 December 1966 in Chester. Previously of Heavy Stereo, Gem joined Oasis following Bonehead's departure and contributed significantly to the band's later sound. He began co-writing songs from Heathen Chemistry onward, contributing "A Bell Will Ring" and "Keep the Dream Alive" to Don't Believe the Truth. He went on to play with Beady Eye following Oasis's breakup.</p>
+    </div>
+
+    <div class="member-card">
+      <div class="member-name">Andy Bell</div>
+      <div class="member-role">Bass Guitar, Guitar</div>
+      <div class="member-years">1999 – 2009</div>
+      <p>Born 11 August 1970 in Cardiff. Formerly the guitarist and co-founder of shoegaze giants Ride, Andy joined as bassist following Guigsy's exit — a remarkable lateral move for a lead guitarist of his talent. He became a full creative contributor to the band, writing "Turn Up the Sun" for Don't Believe the Truth and anchoring the rhythm section with Andy Bell-level musicianship. He co-founded Beady Eye with Liam.</p>
+    </div>
+
+    <div class="member-card">
+      <div class="member-name">Chris Sharrock</div>
+      <div class="member-role">Drums</div>
+      <div class="member-years">2004 – 2009</div>
+      <p>Born 30 May 1964 in Bebington, Wirral. Chris replaced Alan White and played on Don't Believe the Truth and Dig Out Your Soul. A seasoned professional who had previously played with The La's and The Lightning Seeds, he brought experience and precision to the band's final chapter. He also joined Beady Eye and later Noel Gallagher's High Flying Birds.</p>
+    </div>
+
+  </div>
+</div>
+</section>
+
+<!-- DISCOGRAPHY -->
+<section id="discography">
+<div class="container">
+  <h2 class="section-title">Studio Albums</h2>
+
+  <!-- ALBUM 1: DEFINITELY MAYBE -->
+  <div class="album-card">
+    <div class="album-header">
+      <div class="album-number">01</div>
+      <div class="album-meta">
+        <h3>Definitely Maybe</h3>
+        <div class="album-info">Released: 29 August 1994 &nbsp;·&nbsp; Label: Creation Records &nbsp;·&nbsp; Producer: Owen Morris, Noel Gallagher</div>
+        <div class="album-info" style="margin-top:0.3em;">UK Chart Peak: #1 &nbsp;·&nbsp; Certified 7× Platinum (UK)</div>
+      </div>
+    </div>
+    <div class="album-body">
+      <p class="album-desc">The fastest-selling debut album in British chart history at the time of its release, Definitely Maybe announced Oasis as a fully formed, ferociously confident rock band with almost nothing to learn and everything to prove. Recorded on a budget of approximately £75,000 across three studios — Monnow Valley, Sawmills, and Loco — the record captures a specific energy that has never been replicated: the sound of a band who absolutely believe they are going to be the biggest in the world, and who have the songs to make that belief credible. Every track is a mission statement. Liam's voice is extraordinary throughout, a weapon of mass conviction. Noel's guitar playing is gloriously unfussy — riff-led, hook-driven, and emotionally unambiguous.</p>
+      <div class="tracks-grid">
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">01</span><span class="track-name">Rock 'n' Roll Star</span>
+          <div class="track-desc">The album opens with feedback, a count-in, and then one of the greatest opening tracks in rock history. A stadium anthem before Oasis had played a stadium, "Rock 'n' Roll Star" is a declaration of intent — a song about dreaming yourself out of your circumstances through sheer force of will. Liam delivers the lyric with terrifying conviction. The guitar riff is simple and enormous. Noel reportedly said it was the first song he ever finished writing. The extended instrumental outro is pure euphoria.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">02</span><span class="track-name">Shakermaker</span>
+          <div class="track-desc">A loping, groovy track with a melody that owes an acknowledged debt to the New Seekers' "I'd Like to Teach the World to Sing" — a connection that led to a successful legal claim. The song is full of surreal, free-associative imagery delivered by Liam with dead-pan seriousness. Its looseness is deceptive; it's a perfectly constructed pop-rock song. Was their second UK single, reaching number 11.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">03</span><span class="track-name">Live Forever</span>
+          <div class="track-desc">Perhaps the greatest statement Britpop ever made. Written as Noel's explicit counter to the nihilism of grunge — specifically to Kurt Cobain's "I Hate Myself and Want to Die" — "Live Forever" is a song about the desire to transcend mortality through love, belief, and rock and roll. The chorus is one of the most uplifting in popular music. The guitar solo is understated and perfect. A song that has only grown in stature over thirty years. Was the band's third UK single, reaching number 10.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">04</span><span class="track-name">Up in the Sky</span>
+          <div class="track-desc">A loose, rolling track that sits comfortably in the album's flow without ever outstaying its welcome. The lyric is directed at establishment figures and unspecified critics of working-class aspiration. Liam gives it an edge of genuine contempt. The arrangement is spacious and confident.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">05</span><span class="track-name">Columbia</span>
+          <div class="track-desc">One of the most hypnotic tracks on the record — a relentlessly propulsive, riff-driven piece that sounds like a band locked in a groove and refusing to leave. The lyric is minimal and oblique, almost mantra-like. The guitar tone is fuzz-soaked and irresistible. A fan favourite that was a staple of early live sets. Originally appeared on the 1993 demo tape that attracted Alan McGee's attention.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">06</span><span class="track-name">Supersonic</span>
+          <div class="track-desc">The debut single, recorded in a single day as a last-minute addition to a session, is one of the great debut singles in rock history. The lyric is famously surreal — full of characters named after Noel's friends and random imagery that coheres into pure euphoric nonsense. The guitar riff is a monster. Liam sings it like a man absolutely certain of his own genius. Reached number 31 on its release in April 1994 but has since become one of the band's most beloved songs.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">07</span><span class="track-name">Bring It On Down</span>
+          <div class="track-desc">The most abrasive track on the album, a furious, almost punk-inflected number with a riff that feels designed to physically shake the listener. Liam's vocal is confrontational and aggressive in a way that feels cathartic rather than threatening. A reminder that beneath the melody and the ambition, Oasis could be a genuinely scary rock band when they chose to be.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">08</span><span class="track-name">Cigarettes &amp; Alcohol</span>
+          <div class="track-desc">Built on a riff that winks unmistakably at T. Rex's "Get It On," "Cigarettes &amp; Alcohol" is a working-class anthem for a specific kind of hopeless Saturday night — the kind where you've got nothing and nowhere to be, and rock and roll is the only consolation. The chorus is enormous. The riff is irresistible. Noel always acknowledged the T. Rex influence happily. The fourth single from the album, it reached number 7 in the UK — the band's first top 10 single.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">09</span><span class="track-name">Digsy's Dinner</span>
+          <div class="track-desc">The album's most straightforwardly playful track, named after one of Noel's Manchester friends. A melodically rich, almost music-hall number that demonstrates Noel's range as a songwriter — his ability to write something this light and charming alongside something as weighty as "Live Forever" is remarkable. The lyric is about being invited to a friend's house for lasagne. Utterly disarming.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">10</span><span class="track-name">Slide Away</span>
+          <div class="track-desc">Written for Noel's then-girlfriend Louise Jones, "Slide Away" is the album's emotional centrepiece — a slow-burning, achingly beautiful rock ballad that demonstrates a vulnerability not always on display elsewhere. The song builds gradually, adding layers of guitar over a steady, heart-beat rhythm, until it becomes genuinely overwhelming. Many fans and critics consider it Noel's finest composition of the Definitely Maybe era. The outro is one of the most moving passages of music the band ever recorded.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">11</span><span class="track-name">Married with Children</span>
+          <div class="track-desc">The album closes with its quietest, most intimate moment — just Noel on acoustic guitar and his own voice, the backing vocals from Liam stripped back, addressing a relationship that has run its course with weary, affectionate resignation. The simplicity is startling after the noise that has preceded it. A beautiful, honest song that shows another dimension of Noel's writing entirely.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ALBUM 2: WHAT'S THE STORY -->
+  <div class="album-card">
+    <div class="album-header">
+      <div class="album-number">02</div>
+      <div class="album-meta">
+        <h3>(What's the Story) Morning Glory?</h3>
+        <div class="album-info">Released: 2 October 1995 &nbsp;·&nbsp; Label: Creation Records &nbsp;·&nbsp; Producer: Owen Morris, Noel Gallagher</div>
+        <div class="album-info" style="margin-top:0.3em;">UK Chart Peak: #1 &nbsp;·&nbsp; Over 22 million copies sold worldwide</div>
+      </div>
+    </div>
+    <div class="album-body">
+      <p class="album-desc">The second album is one of the best-selling British albums of all time and the definitive document of Britpop at its peak. Recorded at Rockfield Studios in Wales, it represents a step forward in production clarity — Owen Morris's work here is comparatively cleaner and more confident than Definitely Maybe — while the songwriting is, if anything, even more consistently excellent. It contains "Wonderwall," which has become one of the most recognised songs in popular music globally, and "Don't Look Back in Anger," which has achieved an almost sacred cultural status in Britain. The album's cover — photographed on Berwick Street in Soho, London — is one of the most iconic images in rock history.</p>
+      <div class="tracks-grid">
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">01</span><span class="track-name">Hello</span>
+          <div class="track-desc">A thunderously heavy opener that announces the album with complete confidence. Built on a riff borrowed from Gary Glitter's "Hello! Hello! I'm Back Again" (which led to another publishing settlement), "Hello" sets the album's tone immediately: this is a record that knows it is going to conquer the world. The lyric speaks of returning and asserting presence. Liam's vocal here is, arguably, the definitive Liam vocal — utterly in command, slightly menacing, unmistakably himself.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">02</span><span class="track-name">Roll With It</span>
+          <div class="track-desc">The single released in direct competition with Blur's "Country House" in August 1995. A simple, driving, joyful rock song with a lyric about resilience and self-belief. Liam sings it with complete authority. The song was somewhat overshadowed by the chart battle — Blur won — but it is a fine piece of writing that sounds, if anything, more durable than the song it lost to.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">03</span><span class="track-name">Wonderwall</span>
+          <div class="track-desc">One of the most played songs in the history of British popular music and among the most performed acoustic guitar songs in the world. Written for Noel's then-girlfriend Meg Mathews — though Noel has later suggested the "you" of the song is more metaphorical, referring to an imaginary friend who saves you — "Wonderwall" is a pop song of near-architectural perfection. The chord sequence, the layered acoustic and electric guitars, the string arrangement, Liam's vocal (his finest performance on the record), and the chorus that swells into pure emotional release: everything works. A #2 hit in the UK and a worldwide phenomenon. The word "wonderwall" comes from a 1968 George Harrison film and album.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">04</span><span class="track-name">Don't Look Back in Anger</span>
+          <div class="track-desc">Sung by Noel rather than Liam — one of only a handful of full lead vocal performances Noel delivered on a proper Oasis single — "Don't Look Back in Anger" is a song that has grown beyond music into something like a communal anthem. After the Manchester Arena bombing of 2017, crowds spontaneously began singing it in the streets of Manchester as an act of collective grief and defiance. The piano intro is instantly recognisable. The chorus is one of the most singable in rock history. The reference in the lyric to Sally waiting under a waterfall is a deliberate nod to John Lennon's "Imagine." A UK number one single.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">05</span><span class="track-name">Hey Now!</span>
+          <div class="track-desc">A mid-tempo, minor-key track that has always been a slightly underrated entry in the Oasis canon. Its melodic ambition is considerable — the verses build with purpose and the choruses open out into something genuinely affecting. Liam delivers it with the controlled intensity that characterises his best slower-paced performances. A reminder that not every track needed to be an anthem to be exceptional.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">06</span><span class="track-name">Some Might Say</span>
+          <div class="track-desc">The first Oasis number one single in the UK, "Some Might Say" was released in April 1995 and established the trajectory that would carry the album to enormous success. A powerful, hopeful rock song with a lyric about perseverance and the possibility that things will improve. The hook is magnificent. Alan White's drumming — in his first appearance on an Oasis record — is confident and driving. Notable also as the last recording to feature Tony McCarroll, who was replaced before the full album sessions began.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">07</span><span class="track-name">Cast No Shadow</span>
+          <div class="track-desc">A beautiful, string-drenched ballad dedicated to The Verve's Richard Ashcroft — whom Noel admired enormously — specifically addressing the frustration of a artist who feels creatively constrained. The lyric is one of Noel's most affecting and lyrically precise. The string arrangement is lush and perfectly judged. A relatively quiet track in the album's sequencing, it gives the listener space to breathe before the final section.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">08</span><span class="track-name">She's Electric</span>
+          <div class="track-desc">The album's most immediately charming and disarming moment — a short, bouncy, joyful love song with an almost Kinks-esque quality to its verse melody. The lyric describes a girl and her family with affectionate, slightly absurdist detail. At under three minutes, it is over before you want it to be, which is exactly right. One of several tracks on the record that demonstrate Noel's ability to write across emotional registers.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">09</span><span class="track-name">Morning Glory</span>
+          <div class="track-desc">The title track is one of the most viscerally exciting tracks the band ever recorded — a short, breathless, pile-driving rocker that tears through its running time at near-punk velocity. The lyric is somewhat elliptical but the emotional impact is visceral rather than cerebral. At under three and a half minutes, it is a perfect piece of controlled violence. Liam sounds like he's singing for his life.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">10</span><span class="track-name">Champagne Supernova</span>
+          <div class="track-desc">The album's epic closer runs to over seven and a half minutes and contains some of Noel's most dreamlike and mysterious lyric writing. The song is about dislocation, intoxication, love, loss, and the passage of time — or it is about nothing in particular and everything simultaneously. Noel has been deliberately vague about its meaning. What is unambiguous is its power as a piece of music: the acoustic verse, the swelling electric chorus, the middle section with Paul Weller on guitar (a major coup), and the final, hypnotic outro. A song that demands to be listened to at full volume. The album's crowning achievement.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ALBUM 3: BE HERE NOW -->
+  <div class="album-card">
+    <div class="album-header">
+      <div class="album-number">03</div>
+      <div class="album-meta">
+        <h3>Be Here Now</h3>
+        <div class="album-info">Released: 21 August 1997 &nbsp;·&nbsp; Label: Creation Records &nbsp;·&nbsp; Producer: Owen Morris, Noel Gallagher</div>
+        <div class="album-info" style="margin-top:0.3em;">UK Chart Peak: #1 &nbsp;·&nbsp; UK First-Week Sales: 696,000</div>
+      </div>
+    </div>
+    <div class="album-body">
+      <p class="album-desc">The most anticipated album in British music history arrived to extraordinary sales figures and reasonable initial reviews, but its reputation has been complicated ever since. Noel has repeatedly described it as a mistake — the product of too much cocaine and too much success, a record that lost the plot in a fog of excess and overproduction. The songs are often genuinely strong; the production is crushing, airless, and sonically overwhelming in ways that work against the material. And yet there is something to love here — the melodies persist even when they are buried under layer upon layer of guitars. Over time, many listeners have come to find a bruised charm in Be Here Now that was invisible to the critics of 1998.</p>
+      <div class="tracks-grid">
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">01</span><span class="track-name">D'You Know What I Mean?</span>
+          <div class="track-desc">The lead single opens with a helicopter sound effect and a machine-gun snare, before erupting into a wall of guitars so dense it is almost physically disorienting. A UK number one despite being one of the most polarising singles the band ever released. The lyric is strident and self-referential; the production is overwhelming. And yet the melody in the chorus is genuinely beautiful when you can hear it.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">02</span><span class="track-name">My Big Mouth</span>
+          <div class="track-desc">A thundering rocker with one of the album's most focused riffs. Noel acknowledged later that the lyric — self-mocking, aware of the band's reputation for arrogance — was one of the more honest things he wrote in this period. The track has aged reasonably well because the core song is structurally sound even if the production still buries it in reverb and overdubs.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">03</span><span class="track-name">Magic Pie</span>
+          <div class="track-desc">Nearly nine minutes long and featuring a lyric Noel has admitted is largely nonsensical, "Magic Pie" is the album's most divisive track. Fans who love it love it passionately; detractors find it interminable. The guitar work is imaginative and the song genuinely goes to unexpected places harmonically. Its length is excessive but not without musical justification in places.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">04</span><span class="track-name">Stand By Me</span>
+          <div class="track-desc">One of the album's genuine highlights and a reminder of what the record could have been throughout. A strong, emotionally direct ballad-to-rocker with one of the album's most clearly articulated melody lines and a lyric that communicates real feeling rather than cocaine bluster. A UK number two single. The string arrangement lifts the chorus beautifully.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">05</span><span class="track-name">I Hope, I Think, I Know</span>
+          <div class="track-desc">A short, direct rocker that gets the job done efficiently — a relative virtue on an album where most things overstay their welcome. Liam's vocal is full of conviction and the central riff is strong. The track has been described as one of the album's more genuinely enjoyable moments when taken in isolation from the surrounding maximalism.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">06</span><span class="track-name">The Girl in the Dirty Shirt</span>
+          <div class="track-desc">Written for Meg Mathews, Noel's girlfriend at the time, and sung by Noel. A gentler, more melodically nuanced moment in the album — acoustic-led, relatively restrained by Be Here Now standards. The chorus is affecting and Noel's vocal, always more intimate than Liam's, suits the song's quieter emotional register.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">07</span><span class="track-name">Fade In-Out</span>
+          <div class="track-desc">Features a slide guitar performance from Johnny Depp — at the time a close friend of the band's inner circle — which gives the track an unusual texture. The song has a drifting, narcotic quality that actually suits the Be Here Now aesthetic better than most of the album's more bombastic moments. A curio that rewards attention.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">08</span><span class="track-name">Don't Go Away</span>
+          <div class="track-desc">A heartfelt ballad written about Noel's mother, Peggy, who was seriously ill at the time of recording. The emotion is genuine and cuts through the production fog with uncommon clarity. One of the most purely affecting moments on the record, and a song that reveals a side of Noel's character — devotion, fear of loss, familial love — rarely seen in his public persona.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">09</span><span class="track-name">Be Here Now</span>
+          <div class="track-desc">The title track is pure Be Here Now in both its virtues and its vices: enormous, slightly preposterous, sonically overwhelming, but with a genuine melody underneath the noise. The lyric is opaque and the production is a perfect crystallisation of why the album divided opinion so sharply. And yet there is something undeniably exciting about its sheer scale.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">10</span><span class="track-name">All Around the World</span>
+          <div class="track-desc">Running to nearly ten minutes and featuring a full orchestral arrangement, "All Around the World" is the album's most naked bid for Beatles-esque grandeur — and the track that most divides opinion. It was a UK number one single and Noel has defended it consistently as one of his proudest achievements. Critics who find the album excessive tend to find this track the most egregious example; those who love the album's grandiosity tend to find it its finest moment.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">11</span><span class="track-name">It's Gettin' Better (Man!!)</span>
+          <div class="track-desc">The album's closer — and at over seven minutes, still one of the longer closing tracks on a record full of long tracks. Shares its title and general spirit of optimism with the Mama Cass Elliot song of similar name. The extended outro gives the album a fading, dreamlike ending that is more thoughtful than its bombastic opening suggested.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ALBUM 4: STANDING ON THE SHOULDER OF GIANTS -->
+  <div class="album-card">
+    <div class="album-header">
+      <div class="album-number">04</div>
+      <div class="album-meta">
+        <h3>Standing on the Shoulder of Giants</h3>
+        <div class="album-info">Released: 28 February 2000 &nbsp;·&nbsp; Label: Big Brother Recordings &nbsp;·&nbsp; Producer: Mark "Spike" Stent, Noel Gallagher</div>
+        <div class="album-info" style="margin-top:0.3em;">UK Chart Peak: #1</div>
+      </div>
+    </div>
+    <div class="album-body">
+      <p class="album-desc">The first album on Oasis's own label, Big Brother Recordings, following the collapse of Creation Records, and the first to feature the new lineup of Gem Archer and Andy Bell. Recorded partly in Paris, it is the most experimental album of the band's career — influenced by contemporary British psychedelia and electronica, featuring drum loops, backward tracks, and a darker, more introverted sonic palette. It remains a marmite record: some fans regard it as an underrated highlight, others as a confused and directionless effort. The title comes from Isaac Newton's famous phrase about standing on the shoulders of giants, which also appears on the two-pound coin.</p>
+      <div class="tracks-grid">
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">01</span><span class="track-name">Fuckin' in the Bushes</span>
+          <div class="track-desc">An instrumental that opened many of the band's live shows in this period — a thunderous, sample-heavy piece built around a propulsive rhythm and layers of fuzzy noise. Functions as an overture rather than a song, setting an aggressive, psychedelic tone for what follows. Has become iconic as a live introduction.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">02</span><span class="track-name">Go Let It Out</span>
+          <div class="track-desc">The lead single and one of the album's strongest tracks — a direct, melodically clean rock song that feels like a concession toward accessibility on an otherwise experimental record. The chorus is immediately singable and the guitar work is crisp. A UK number one single and perhaps the clearest indication of what the album might have been if Noel had pursued a more conventional direction throughout.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">03</span><span class="track-name">Who Feels Love?</span>
+          <div class="track-desc">The album's most explicitly psychedelic moment — a meditation on consciousness and connection with a distinct Eastern influence in its melodic structure. Inspired partly by Noel's interest in transcendental meditation during this period. The production is lush and hallucinatory. A strange, genuinely beautiful piece that sounds like nothing else in the Oasis catalogue.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">04</span><span class="track-name">Put Yer Money Where Yer Mouth Is</span>
+          <div class="track-desc">A hard-rocking track that provides energy and momentum in the album's middle section. More conventional than its surrounding tracks, it is a confident piece of guitar rock that benefits from the contributions of the new lineup. Liam sounds engaged and forceful.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">05</span><span class="track-name">Little James</span>
+          <div class="track-desc">Written by Liam for his stepson James Donergan (son of Patsy Kensit), this is the first time Liam received a songwriting credit on an Oasis record. A tender, simple acoustic piece — honestly quite limited musically — but touching in its sincerity. Critics were not universally kind, but its personal origin gives it an authenticity that more polished compositions lack.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">06</span><span class="track-name">Gas Panic!</span>
+          <div class="track-desc">One of the most arresting and genuinely unsettling tracks Oasis ever recorded — a dark, claustrophobic piece about paranoia, possibly related to Noel's cocaine use at the height of the Be Here Now era. The lyric is explicit about anxiety and psychological fragility in a way Noel rarely allowed himself. The production is tense and ominous, building slowly. One of the album's most significant artistic achievements.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">07</span><span class="track-name">Where Did It All Go Wrong?</span>
+          <div class="track-desc">A reflective, mid-tempo ballad that feels like Noel taking stock of the years since Knebworth — processing the disorientation and loss that followed the peak of success. The lyric is more direct about confusion and regret than Noel typically allowed himself to be. A genuinely moving track that benefits from repeated listening.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">08</span><span class="track-name">Sunday Morning Call</span>
+          <div class="track-desc">A gentle, hymn-like ballad that provides the album's most straightforwardly beautiful moment. The melody is classic Noel — naturally graceful, slightly melancholy, completely memorable. Sung by Noel, it has a Sunday morning quality of bruised, quiet reflection. One of the album's most loved tracks among fans.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">09</span><span class="track-name">I Can See a Liar</span>
+          <div class="track-desc">A spiky, direct rocker — the most straightforwardly confrontational track on the album. The target of the lyric has never been definitively identified, though various candidates have been suggested. Musically it is among the more energetic tracks on a record that sometimes lacks forward momentum.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">10</span><span class="track-name">Roll It Over</span>
+          <div class="track-desc">The album's final track is a measured, largely acoustic piece that draws its imagery from nature — unusual for Oasis. The song has a contemplative, almost country-influenced quality that feels genuinely new. As a closing statement, it suggests the possibility of a calmer, more reflective Oasis than the one the public had grown accustomed to.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ALBUM 5: HEATHEN CHEMISTRY -->
+  <div class="album-card">
+    <div class="album-header">
+      <div class="album-number">05</div>
+      <div class="album-meta">
+        <h3>Heathen Chemistry</h3>
+        <div class="album-info">Released: 1 July 2002 &nbsp;·&nbsp; Label: Big Brother Recordings &nbsp;·&nbsp; Producer: Noel Gallagher</div>
+        <div class="album-info" style="margin-top:0.3em;">UK Chart Peak: #1</div>
+      </div>
+    </div>
+    <div class="album-body">
+      <p class="album-desc">Oasis self-produced Heathen Chemistry with Noel taking sole production credit — a decision that resulted in a warmer, less overworked sound than the preceding two records. More importantly, the album marked the first time that non-Noel members received songwriting credits on a studio album, with Liam, Gem, and Andy each contributing tracks. The result is a more democratic and in some ways more interesting record, even if Noel's tracks remain the most powerful. "The Hindu Times" is a barnstorming lead single. "Stop Crying Your Heart Out" became an enduring radio staple.</p>
+      <div class="tracks-grid">
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">01</span><span class="track-name">The Hindu Times</span>
+          <div class="track-desc">The lead single is one of the most gloriously unhinged things Oasis ever released — a fuzz-drenched, riff-driven rocker with a lyric that is essentially pure rock and roll excess, unapologetically referencing drugs and love and ego in equal measure. Liam sounds as if he was born to sing it. A UK number one that restored enormous faith in the band after a difficult few years.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">02</span><span class="track-name">Force of Nature</span>
+          <div class="track-desc">A strong, mid-paced rocker that sits comfortably early in the running order. The melody is confident and the production is clean. Noel's guitar work here is among the more inventive on the record — the lead lines in the outro demonstrate a player who, when the production gets out of the way, still has plenty to say.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">03</span><span class="track-name">Hung in a Bad Place</span>
+          <div class="track-desc">Written by Gem Archer — his first songwriting contribution to an Oasis album. A driving rock track with a strong central hook. Gem's compositional voice is distinctly different from Noel's: rockier and less melodically ornate, but with its own energetic appeal. Liam sounds comfortable with the material and gives it genuine commitment.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">04</span><span class="track-name">Stop Crying Your Heart Out</span>
+          <div class="track-desc">One of Noel's most emotionally direct songs — a piano-driven ballad of consolation and resilience. Written partly for Liam (the brothers' personal relationship was under enormous strain at this period) and partly as a more universal message of support. The chorus became a singalong staple at live shows. Taken on by a whole new generation of listeners following the 2017 Manchester Arena bombing, when it became associated with the city's grieving and recovery.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">05</span><span class="track-name">Songbird</span>
+          <div class="track-desc">Written by Liam for his then-wife Nicole Appleton — a surprise contribution that revealed an entirely unexpected tenderness in a vocalist known for swagger. A very short, very simple acoustic love song, it works because of its complete sincerity. The guitar playing is minimal and the vocal is bare and unaffected. One of the most charming things Liam has ever done.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">06</span><span class="track-name">Little by Little</span>
+          <div class="track-desc">A majestic, mid-paced anthem and one of Noel's most accomplished melodies of the 2000s decade. The lyric addresses aging, continuity, and perseverance with a maturity absent from some of his earlier writing. The string arrangement is restrained and effective. A UK number two single that reminded listeners why Noel Gallagher was still one of the finest pop melodists in Britain.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">07</span><span class="track-name">A Quick Peep</span>
+          <div class="track-desc">A brief instrumental interlude — barely a minute long — that functions as a palate cleanser between the two halves of the album. Delicate and slightly psychedelic, it demonstrates a lighter, more playful side of the band's instrumental capabilities.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">08</span><span class="track-name">(Probably) All in the Mind</span>
+          <div class="track-desc">A confident, striding rock track written by Andy Bell — his songwriting debut on a Oasis studio record. The song has a classic rock sensibility with a slightly looser, more freewheeling feel than Noel's more carefully constructed compositions. Liam gives it full commitment and the result is one of the more underrated tracks in the late-period Oasis catalogue.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">09</span><span class="track-name">She Is Love</span>
+          <div class="track-desc">A beautiful, acoustic-led ballad sung by Noel — warm, simple, and utterly unpretentious. The lyric is a direct love song without obliqueness or ambiguity. The production is minimal and the melody is one of the most naturally graceful things Noel wrote in his later Oasis period. A fan favourite.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">10</span><span class="track-name">Born on a Different Cloud</span>
+          <div class="track-desc">One of the more psychedelic, layered tracks on the album — a swirling, mid-paced piece with shimmering guitars and a melody that feels deliberately hazy and dreamlike. The lyric touches on destiny and difference. One of Noel's more ambitious later-period compositions.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">11</span><span class="track-name">Better Man</span>
+          <div class="track-desc">Written by Liam — his second contribution to the album. A more expansive piece than "Songbird," showing genuine development as a songwriter. The title and lyrical territory — aspiring toward personal improvement — feels autobiographical. The production is fuller than "Songbird" but maintains the directness that characterises Liam's writing at its best.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ALBUM 6: DON'T BELIEVE THE TRUTH -->
+  <div class="album-card">
+    <div class="album-header">
+      <div class="album-number">06</div>
+      <div class="album-meta">
+        <h3>Don't Believe the Truth</h3>
+        <div class="album-info">Released: 30 May 2005 &nbsp;·&nbsp; Label: Big Brother Recordings &nbsp;·&nbsp; Producer: Noel Gallagher, Dave Sardy</div>
+        <div class="album-info" style="margin-top:0.3em;">UK Chart Peak: #1 &nbsp;·&nbsp; Best reviewed album since Morning Glory</div>
+      </div>
+    </div>
+    <div class="album-body">
+      <p class="album-desc">Widely regarded as the band's creative comeback, Don't Believe the Truth was co-produced with Dave Sardy and received the warmest critical reception since Morning Glory. A more focused, democratic, and energised record than its predecessors, it drew contributions from all five members and found Noel writing with a new economy and precision. "Lyla" was exhilarating; "The Importance of Being Idle" was a number one hit; "Let There Be Love" was the most graceful album closer the band had written since "Married with Children." Many fans who had drifted away returned for this record.</p>
+      <div class="tracks-grid">
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">01</span><span class="track-name">Turn Up the Sun</span>
+          <div class="track-desc">Written by Andy Bell, this album opener sets a warm, optimistic tone — a melodically rich, mid-paced rocker that immediately signals a band playing with renewed confidence. The production is cleaner and more balanced than anything since Heathen Chemistry, and Liam's vocal sounds energised and committed. A genuinely strong opener from a contributor other than Noel.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">02</span><span class="track-name">Mucky Fingers</span>
+          <div class="track-desc">One of the more directly polemical Noel compositions — a pointed, slightly sarcastic track addressing critics and the media establishment. The lyric uses the language of rock and roll mythology to deflate pretension. The delivery is direct and energetic. A short, punchy statement that gives the album an edge of combativeness without self-pity.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">03</span><span class="track-name">Lyla</span>
+          <div class="track-desc">The lead single is one of the most purely exciting things Oasis recorded in their post-Morning Glory career — a propulsive, anthemic rocker that barrels forward with complete conviction. The chorus is enormous and the verse melody is equally strong. Liam sounds as good as at any point since the mid-1990s. The riff owes something to Slade, which Noel acknowledged cheerfully. A UK number one single.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">04</span><span class="track-name">Love Like a Bomb</span>
+          <div class="track-desc">Written by Liam — a short, hard-rocking piece with an appropriately explosive energy. Demonstrates Liam's growing confidence as a songwriter and his instinct for visceral simplicity. The track packs its punch in under three minutes and gets out.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">05</span><span class="track-name">The Importance of Being Idle</span>
+          <div class="track-desc">One of Noel's most charming and effortlessly constructed songs — a gentle, music-hall-influenced piece with a melody that feels both completely original and as if it has always existed. The title references Oscar Wilde. The lyric is a light, almost comic ode to laziness and contentment. Sung by Liam with a beguilingly casual delivery, it became a UK number one single — the band's first since "All Around the World" in 1998. The acoustic guitar-led production is warm and perfectly scaled.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">06</span><span class="track-name">The Meaning of Soul</span>
+          <div class="track-desc">A short, wild, stripped-back rock piece — essentially an interlude running to barely over a minute. Liam tears through it with gleeful abandon. A palate-cleanser that demonstrates the band's continued appetite for raw energy.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">07</span><span class="track-name">Guess God Thinks I'm Abel</span>
+          <div class="track-desc">Written by Gem Archer, this is one of his most successful contributions to the Oasis catalogue — a driving, slightly dark rock track with a biblical reference in the title suggesting themes of favoured and unfavoured sons. Not a coincidental choice of imagery given the context of two brothers in perpetual sibling rivalry. One of the more musically interesting tracks on the album.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">08</span><span class="track-name">Part of the Queue</span>
+          <div class="track-desc">A melodically rich, mid-tempo piece with a lyric that addresses everyday life, ordinariness, and finding meaning in the mundane. The metaphor of the queue — waiting, belonging, the shared experience of ordinary existence — is worked through with more sophistication than might be expected from a band still primarily associated with adolescent grandeur. A moving and underrated track.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">09</span><span class="track-name">Keep the Dream Alive</span>
+          <div class="track-desc">Written by Gem — a rousing, aspirational piece that sits well with the album's broadly optimistic mood. The title functions as the album's thesis statement: keep going, keep believing, despite everything. The production is punchy and the melody is memorable.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">10</span><span class="track-name">A Bell Will Ring</span>
+          <div class="track-desc">Another Gem contribution — a bright, energetic rocker with an upward-moving chorus melody. The track benefits from the production's clarity and sits well in the album's final section, maintaining momentum toward the closing track.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">11</span><span class="track-name">Let There Be Love</span>
+          <div class="track-desc">The album's closer is one of Noel's most accomplished ballads — a slow-building, orchestrated piece of sustained emotional intensity. The lyric is a meditation on love, loss, and the passage of time, delivered with an uncharacteristic openness. The string arrangement builds with great patience. Sung partly by Noel, partly by Liam — one of the few times they share a lead vocal — and the contrast between their voices is profoundly affecting. A song that rewards many listenings and grows more powerful each time.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ALBUM 7: DIG OUT YOUR SOUL -->
+  <div class="album-card">
+    <div class="album-header">
+      <div class="album-number">07</div>
+      <div class="album-meta">
+        <h3>Dig Out Your Soul</h3>
+        <div class="album-info">Released: 6 October 2008 &nbsp;·&nbsp; Label: Big Brother Recordings &nbsp;·&nbsp; Producer: Dave Sardy</div>
+        <div class="album-info" style="margin-top:0.3em;">UK Chart Peak: #1 &nbsp;·&nbsp; Final studio album</div>
+      </div>
+    </div>
+    <div class="album-body">
+      <p class="album-desc">Oasis's final studio album is a heavier, more psychedelic record than Don't Believe the Truth — closer in spirit to the experimental tendencies of Standing on the Shoulder of Giants but with the added confidence and production weight of Dave Sardy at the desk. "The Shock of the Lightning" is a ferocious lead single. "Falling Down" is a lysergic, orchestral masterpiece. "I'm Outta Time" is among Liam's finest vocal performances. The album was received strongly and suggested that the band had more to offer — which makes Noel's subsequent departure nine months later all the more poignant. As a final statement it is unexpectedly powerful.</p>
+      <div class="tracks-grid">
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">01</span><span class="track-name">Bag It Up</span>
+          <div class="track-desc">Written by Gem, the album opens with a fuzz-soaked, groove-heavy rocker that immediately establishes the record's heavier sonic palette. The central riff is powerful and Liam commits to it with complete authority. A strong opening statement from a non-primary songwriter that demonstrates how genuinely collaborative the late-period Oasis had become.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">02</span><span class="track-name">The Turning</span>
+          <div class="track-desc">Written by Andy Bell — a swirling, somewhat psychedelic rocker that builds from a deceptively simple opening into something considerably more expansive. The production is thick and textured. Andy's songwriting voice is complementary to Noel's — adding a shoegaze-influenced density that enriches the album's overall sound.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">03</span><span class="track-name">Waiting for the Rapture</span>
+          <div class="track-desc">A hard rock track with an apocalyptic lyric that plays with religious imagery in the service of a classic rock and roll statement about living for the moment. One of the album's most energetic moments and one that connects the later-period band unmistakably to the raw ambition of Definitely Maybe.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">04</span><span class="track-name">The Shock of the Lightning</span>
+          <div class="track-desc">The lead single is one of the most viscerally exciting things in the late Oasis catalogue — a driving, fuzz-drenched piece with a lyric addressing love, desire, and electric connection. The production has a physical force that makes it one of the heaviest things the band ever released. Reached number three in the UK. The music video was directed by W.I.Z.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">05</span><span class="track-name">I'm Outta Time</span>
+          <div class="track-desc">Written by Liam — his most emotionally complex and musically ambitious composition for Oasis. A mid-paced ballad-rocker that builds slowly and beautifully, with a lyric touching on mortality, memory, and the passage of time. The song samples dialogue from a 1967 John Lennon television appearance — an explicit acknowledgement of one of Liam's lifelong hero-worships. The vocal performance is extraordinary: raw, exposed, and genuinely moving. One of the finest moments of the entire Oasis catalogue.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">06</span><span class="track-name">(Get Off Your) High Horse Lady</span>
+          <div class="track-desc">A raucous, loose-limbed rocker written by Noel — the album's most straightforwardly riff-driven piece. Provides welcome energy and momentum in the album's middle section. Liam delivers it with a swagger that recalls the early records.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">07</span><span class="track-name">Falling Down</span>
+          <div class="track-desc">One of the most musically ambitious and genuinely beautiful things Oasis ever created. An orchestral, lysergic ballad with a sweeping string arrangement and a melody of extraordinary grace. Noel's production instincts are at their finest here, allowing the song space to breathe and grow. The lyric has a melancholy, autumnal quality that feels like a conscious farewell — though this was not known at the time of release. Subsequently released as the final Oasis single following the band's breakup, giving it an elegiac significance. A masterpiece.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">08</span><span class="track-name">To Be Where There's Life</span>
+          <div class="track-desc">Written by Andy Bell — a mid-paced rocker with a lyric addressing aspiration and movement. The melody is strong and the production suits it well. Another example of how Andy's contributions gave the late-period band a breadth it would have lacked as a vehicle for Noel's writing alone.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">09</span><span class="track-name">Ain't Got Nothin'</span>
+          <div class="track-desc">A short, fierce rocker — one of the album's most direct and unambiguous pieces of guitar violence. At around two and a half minutes, it recalls the economical punch of the Definitely Maybe era. Liam sounds ferocious and committed.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">10</span><span class="track-name">The Nature of Reality</span>
+          <div class="track-desc">Written by Gem — a contemplative, slightly psychedelic piece that ventures into philosophical territory suggested by its title. The production is layered and swirling. A quiet moment in the album's penultimate position that creates space before the closing track.</div>
+        </div>
+        <div class="track-item" onclick="toggleTrack(this)">
+          <span class="track-number">11</span><span class="track-name">Soldier On</span>
+          <div class="track-desc">Written by Liam, the album's final track closes Oasis's studio career with an acoustic simplicity that echoes "Married with Children" at the end of Definitely Maybe. A stripped-back, direct piece of encouragement — keep going, persist, don't give in — that functions, in retrospect, as the band's farewell message to itself and to its audience. Whatever the future held, the instruction remained the same: soldier on.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+<!-- SINGLES -->
+<section id="singles">
+<div class="container">
+  <h2 class="section-title">UK Singles Discography</h2>
+  <p class="muted" style="margin-bottom:1.5rem;">All official UK singles releases in chronological order.</p>
+  <div class="singles-list">
+    <div class="single-item"><div class="single-num">01</div><div class="single-info"><h5>Supersonic</h5><span>April 1994 &nbsp;·&nbsp; UK #31</span></div></div>
+    <div class="single-item"><div class="single-num">02</div><div class="single-info"><h5>Shakermaker</h5><span>June 1994 &nbsp;·&nbsp; UK #11</span></div></div>
+    <div class="single-item"><div class="single-num">03</div><div class="single-info"><h5>Live Forever</h5><span>August 1994 &nbsp;·&nbsp; UK #10</span></div></div>
+    <div class="single-item"><div class="single-num">04</div><div class="single-info"><h5>Cigarettes &amp; Alcohol</h5><span>October 1994 &nbsp;·&nbsp; UK #7</span></div></div>
+    <div class="single-item"><div class="single-num">05</div><div class="single-info"><h5>Whatever</h5><span>December 1994 &nbsp;·&nbsp; UK #3</span></div></div>
+    <div class="single-item"><div class="single-num">06</div><div class="single-info"><h5>Some Might Say</h5><span>May 1995 &nbsp;·&nbsp; UK #1 ★</span></div></div>
+    <div class="single-item"><div class="single-num">07</div><div class="single-info"><h5>Roll With It</h5><span>August 1995 &nbsp;·&nbsp; UK #2</span></div></div>
+    <div class="single-item"><div class="single-num">08</div><div class="single-info"><h5>Wonderwall</h5><span>October 1995 &nbsp;·&nbsp; UK #2</span></div></div>
+    <div class="single-item"><div class="single-num">09</div><div class="single-info"><h5>Don't Look Back in Anger</h5><span>February 1996 &nbsp;·&nbsp; UK #1 ★</span></div></div>
+    <div class="single-item"><div class="single-num">10</div><div class="single-info"><h5>Champagne Supernova</h5><span>1996 (US release)</span></div></div>
+    <div class="single-item"><div class="single-num">11</div><div class="single-info"><h5>D'You Know What I Mean?</h5><span>July 1997 &nbsp;·&nbsp; UK #1 ★</span></div></div>
+    <div class="single-item"><div class="single-num">12</div><div class="single-info"><h5>Stand By Me</h5><span>September 1997 &nbsp;·&nbsp; UK #2</span></div></div>
+    <div class="single-item"><div class="single-num">13</div><div class="single-info"><h5>All Around the World</h5><span>January 1998 &nbsp;·&nbsp; UK #1 ★</span></div></div>
+    <div class="single-item"><div class="single-num">14</div><div class="single-info"><h5>Go Let It Out</h5><span>February 2000 &nbsp;·&nbsp; UK #1 ★</span></div></div>
+    <div class="single-item"><div class="single-num">15</div><div class="single-info"><h5>Who Feels Love?</h5><span>April 2000 &nbsp;·&nbsp; UK #4</span></div></div>
+    <div class="single-item"><div class="single-num">16</div><div class="single-info"><h5>Sunday Morning Call</h5><span>July 2000 &nbsp;·&nbsp; UK #4</span></div></div>
+    <div class="single-item"><div class="single-num">17</div><div class="single-info"><h5>The Hindu Times</h5><span>April 2002 &nbsp;·&nbsp; UK #1 ★</span></div></div>
+    <div class="single-item"><div class="single-num">18</div><div class="single-info"><h5>Stop Crying Your Heart Out</h5><span>June 2002 &nbsp;·&nbsp; UK #2</span></div></div>
+    <div class="single-item"><div class="single-num">19</div><div class="single-info"><h5>Little by Little / She Is Love</h5><span>September 2002 &nbsp;·&nbsp; UK #2</span></div></div>
+    <div class="single-item"><div class="single-num">20</div><div class="single-info"><h5>Songbird</h5><span>February 2003 &nbsp;·&nbsp; UK #3</span></div></div>
+    <div class="single-item"><div class="single-num">21</div><div class="single-info"><h5>Lyla</h5><span>May 2005 &nbsp;·&nbsp; UK #1 ★</span></div></div>
+    <div class="single-item"><div class="single-num">22</div><div class="single-info"><h5>The Importance of Being Idle</h5><span>August 2005 &nbsp;·&nbsp; UK #1 ★</span></div></div>
+    <div class="single-item"><div class="single-num">23</div><div class="single-info"><h5>Let There Be Love</h5><span>November 2005 &nbsp;·&nbsp; UK #2</span></div></div>
+    <div class="single-item"><div class="single-num">24</div><div class="single-info"><h5>The Shock of the Lightning</h5><span>September 2008 &nbsp;·&nbsp; UK #3</span></div></div>
+    <div class="single-item"><div class="single-num">25</div><div class="single-info"><h5>I'm Outta Time</h5><span>November 2008 &nbsp;·&nbsp; UK #12</span></div></div>
+    <div class="single-item"><div class="single-num">26</div><div class="single-info"><h5>Falling Down</h5><span>March 2009 &nbsp;·&nbsp; UK #10</span></div></div>
+  </div>
+
+  <h3 class="sub-title" style="margin-top:3rem;">Notable B-Sides &amp; Non-Album Tracks</h3>
+  <p>Oasis are exceptional among their peers for the quality of their B-side catalogue — so consistent that the 1998 compilation The Masterplan was essentially a collection of outstanding songs that hadn't made the album cuts. The following tracks are considered among the finest in the band's output despite never appearing on a studio album.</p>
+  <div class="singles-list">
+    <div class="single-item"><div class="single-num">—</div><div class="single-info"><h5>Acquiesce</h5><span>B-side to Some Might Say (1995) · Often cited as one of the best songs Oasis ever wrote</span></div></div>
+    <div class="single-item"><div class="single-num">—</div><div class="single-info"><h5>The Masterplan</h5><span>B-side to Wonderwall (1995) · Gave its name to the 1998 B-sides compilation</span></div></div>
+    <div class="single-item"><div class="single-num">—</div><div class="single-info"><h5>Half the World Away</h5><span>B-side to Whatever (1994) · Used as the theme to BBC sitcom The Royle Family</span></div></div>
+    <div class="single-item"><div class="single-num">—</div><div class="single-info"><h5>Talk Tonight</h5><span>B-side to Some Might Say (1995) · Acoustic ballad about a night in San Francisco</span></div></div>
+    <div class="single-item"><div class="single-num">—</div><div class="single-info"><h5>Rockin' Chair</h5><span>B-side to Roll With It (1995) · Melancholy acoustic gem</span></div></div>
+    <div class="single-item"><div class="single-num">—</div><div class="single-info"><h5>The Hindu Times (acoustic)</h5><span>Various B-sides from 2002 sessions</span></div></div>
+    <div class="single-item"><div class="single-num">—</div><div class="single-info"><h5>Whatever</h5><span>Stand-alone single (1994) · Features string arrangement co-written with Neil Innes; led to a publishing dispute</span></div></div>
+    <div class="single-item"><div class="single-num">—</div><div class="single-info"><h5>Listen Up</h5><span>B-side to Some Might Say · Overlooked gem from the Morning Glory sessions</span></div></div>
+  </div>
+</div>
+</section>
+
+<!-- KNEBWORTH FEATURE -->
+<section id="knebworth">
+<div class="wide-container">
+  <h2 class="section-title" style="text-align:center;border:none;">Knebworth 1996</h2>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;margin:2rem 0;text-align:center;">
+    <div>
+      <div class="big-stat">2.5M</div>
+      <div class="stat-label">ticket applications</div>
+    </div>
+    <div>
+      <div class="big-stat">250K</div>
+      <div class="stat-label">attended across 2 nights</div>
+    </div>
+    <div>
+      <div class="big-stat">1 in 20</div>
+      <div class="stat-label">people in Britain applied</div>
+    </div>
+  </div>
+  <div class="container">
+    <p>On 10 and 11 August 1996, Oasis played what is considered the defining concert of the Britpop era and the most significant British outdoor rock concert since Live Aid. Knebworth Park, Hertfordshire. Two nights. A quarter of a million people. The scale was staggering: approximately one in twenty of the entire British population had applied for a ticket, making the demand-to-capacity ratio almost impossible to comprehend.</p>
+    <p>The set list across both nights drew heavily from the first two albums — the songs the audience knew and loved with an intensity that is rare in popular music. "Morning Glory," "Champagne Supernova," "Live Forever," "Wonderwall," "Don't Look Back in Anger" — each one landing like a tidal wave on the assembled crowd. Support acts included Manic Street Preachers, The Prodigy, The Charlatans, The Bootleg Beatles, Ocean Colour Scene, and The Chemical Brothers.</p>
+    <p>Liam Gallagher, twenty-three years old, walked to the microphone at Knebworth and owned it completely. His voice, at this moment, was arguably the most powerful instrument in British music. The shows were filmed for a live release and various television broadcasts, and the footage retains its power today — a document of a specific cultural moment that cannot be manufactured, only witnessed.</p>
+    <p>Noel Gallagher has said that after Knebworth he could no longer imagine what the next milestone would be. "We'd done it. We'd done everything," he said in a later interview. "There was only one direction from there and that was down." Whether or not the descent was inevitable, it is impossible to overstate how completely Oasis dominated British culture in that August of 1996. Knebworth was the summit.</p>
+
+    <div class="quote-block">
+      <p>"People will be talking about Knebworth in a hundred years. I know that for a fact. Because it was the last time it felt like that in this country — when music meant everything."</p>
+      <cite>— Noel Gallagher</cite>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- RELATED BANDS -->
+<section id="related">
+<div class="container">
+  <h2 class="section-title">20 Related Bands</h2>
+  <p style="margin-bottom:0.5rem;">The bands that shared Oasis's world, influenced them, were influenced by them, or competed and collaborated with them across the Britpop era and beyond.</p>
+  <div class="bands-grid">
+
+    <div class="band-card">
+      <h4>The Stone Roses</h4>
+      <div class="band-years">1983 – 1996, 2011 – 2017 &nbsp;·&nbsp; Manchester</div>
+      <p>The single greatest direct influence on Oasis. Noel Gallagher has cited the Stone Roses' 1989 debut album as the record that made him want to be in a band. The combination of Ian Brown's insouciant cool, John Squire's incandescent guitar work, and songs of total melodic perfection created the template for the Gallaghers' own ambitions. The swagger, the working-class confidence, the belief that a band from Manchester could conquer the world — all of it began here.</p>
+      <span class="band-connection">Primary influence</span>
+    </div>
+
+    <div class="band-card">
+      <h4>The Beatles</h4>
+      <div class="band-years">1960 – 1970 &nbsp;·&nbsp; Liverpool</div>
+      <p>Oasis's obsession with The Beatles was constant, explicit, and entirely unashamed. Noel referenced them in interviews more than any other band, their melodies echo throughout the Oasis catalogue, "Champagne Supernova" samples the same spirit as "A Day in the Life," and the band's entire aesthetic — the matching suits of the early years aside — was modelled on their heroes from Liverpool. "Wonderwall" takes its title from a George Harrison solo record. "Don't Look Back in Anger" begins with the piano introduction from "Imagine." The debt is enormous and proudly acknowledged.</p>
+      <span class="band-connection">Greatest influence</span>
+    </div>
+
+    <div class="band-card">
+      <h4>Blur</h4>
+      <div class="band-years">1988 – 2003, 2009 – present &nbsp;·&nbsp; London</div>
+      <p>Oasis's great rivals during the Britpop years — an opposition as much constructed by the music press as reflecting genuine animosity, though there was real mutual contempt between Liam and Damon Albarn. Where Oasis were working-class, Northern, and sincere, Blur were art-school, Southern, and ironic — at least in their Britpop phase. Their "chart battle" in August 1995 was the most-discussed single event in British pop history. In hindsight, both bands produced extraordinary work and their rivalry enriched the era.</p>
+      <span class="band-connection">Britpop rivals</span>
+    </div>
+
+    <div class="band-card">
+      <h4>Pulp</h4>
+      <div class="band-years">1978 – 2002, 2011 – present &nbsp;·&nbsp; Sheffield</div>
+      <p>Jarvis Cocker's band were the third pillar of the Britpop triumvirate alongside Oasis and Blur, and in many respects the most musically sophisticated. Where Oasis dealt in guitar anthems and emotional directness, Pulp brought wit, observation, and a sharp eye for class and sexuality. "Common People" is one of the defining songs of the 1990s — and, like so much Britpop, it was a product of the same cultural moment that produced Definitely Maybe.</p>
+      <span class="band-connection">Britpop contemporaries</span>
+    </div>
+
+    <div class="band-card">
+      <h4>The Verve</h4>
+      <div class="band-years">1990 – 1999, 2007 – 2009 &nbsp;·&nbsp; Wigan</div>
+      <p>Richard Ashcroft's band were close companions to Oasis during the Britpop years — Northern, guitar-driven, and equally ambitious. Noel dedicated "Cast No Shadow" to Ashcroft. The two bands toured together, and their sonic similarities — big guitars, aspirational lyrics, stadium-sized melodies — made them natural allies. Urban Hymns (1997) was one of the few albums of the period to rival Morning Glory in terms of cultural impact, powered by the inescapable "Bitter Sweet Symphony."</p>
+      <span class="band-connection">Close allies</span>
+    </div>
+
+    <div class="band-card">
+      <h4>Suede</h4>
+      <div class="band-years">1989 – 2003, 2010 – present &nbsp;·&nbsp; London</div>
+      <p>Often cited as the true pioneers of Britpop, Suede — fronted by Brett Anderson — arrived before Oasis and established many of the genre's defining characteristics: glam influences, English subject matter, guitar-centred production, an emphasis on lyrical imagery over politicised statement. Their self-titled debut (1993) was voted Mercury Prize Album of the Year. Their relationship with Oasis was not warm — the bands inhabited very different aesthetic universes — but their influence on the scene that produced Oasis is undeniable.</p>
+      <span class="band-connection">Britpop pioneers</span>
+    </div>
+
+    <div class="band-card">
+      <h4>Ocean Colour Scene</h4>
+      <div class="band-years">1989 – present &nbsp;·&nbsp; Birmingham</div>
+      <p>Perhaps the closest sonic relatives to Oasis among all British bands of the 1990s. Simon Fowler's guitar-driven, melody-first, lad-rock-adjacent sound shared enormous territory with the Gallaghers' vision, and the two bands were genuine friends — Noel played acoustic guitar on several OCS recordings. Paul Weller (whom both bands adored) was a connector between them. Moseley Shoals (1996) was their breakthrough, perfectly capturing a similar mood to the Oasis records of the same period.</p>
+      <span class="band-connection">Closest sonic relatives</span>
+    </div>
+
+    <div class="band-card">
+      <h4>Supergrass</h4>
+      <div class="band-years">1993 – 2010, 2019 – present &nbsp;·&nbsp; Oxford</div>
+      <p>A younger, more musically eclectic Britpop band who shared the same Creation Records-adjacent world as Oasis. Where Oasis were grandiose and serious, Supergrass were exuberant and playful — their debut single "Caught by the Fuzz" announced a band with something genuinely different to offer. "Alright" became the sound of summer 1995. Gaz Coombes grew into one of the most accomplished songwriters of his generation.</p>
+      <span class="band-connection">Britpop era</span>
+    </div>
+
+    <div class="band-card">
+      <h4>Elastica</h4>
+      <div class="band-years">1992 – 2001 &nbsp;·&nbsp; London</div>
+      <p>Justine Frischmann's band — she was Damon Albarn's partner, adding another layer to the Blur/Oasis dynamic — delivered one of Britpop's most exciting debut singles in "Line Up" and a debut album of relentless, compact guitar pop. Their relationship to Wire and new wave gave them a sharper, more angular quality than most of their contemporaries, while their speed and economy was a useful corrective to the maximalism that later consumed Be Here Now.</p>
+      <span class="band-connection">Britpop era</span>
+    </div>
+
+    <div class="band-card">
+      <h4>Cast</h4>
+      <div class="band-years">1992 – 2001, 2010 – present &nbsp;·&nbsp; Liverpool</div>
+      <p>Led by John Power, formerly of The La's, Cast occupied the same melodic, guitar-driven territory as Oasis but with a distinctly Liverpudlian flavour. All Change (1995) was a major commercial success and Power's Lennon-McCartney-influenced songwriting was genuinely impressive. Oasis and Cast toured together and shared the same broad aesthetic values. Power's voice had a warmth that complemented Liam's rawness.</p>
+      <span class="band-connection">Touring companions</span>
+    </div>
+
+    <div class="band-card">
+      <h4>The La's</h4>
+      <div class="band-years">1983 – 1992, 2005 – present &nbsp;·&nbsp; Liverpool</div>
+      <p>Lee Mavers' near-mythological band released a single self-titled album in 1990 that is one of the most perfect guitar pop records ever made. Mavers' perfectionism and unwillingness to release anything he considered compromised resulted in a famously sparse catalogue, but what exists — especially "There She Goes" — is extraordinarily beautiful. Noel Gallagher cited The La's as a major influence, and the melodic directness and working-class Englishness of their approach feeds directly into the Oasis sound.</p>
+      <span class="band-connection">Key influence</span>
+    </div>
+
+    <div class="band-card">
+      <h4>Shed Seven</h4>
+      <div class="band-years">1990 – 2003, 2007 – present &nbsp;·&nbsp; York</div>
+      <p>A Northern Britpop band with a more overtly emotional, guitar-pop approach than Oasis's bombast. Rick Witter's vocals are expressive and direct. Tracks like "Chasing Rainbows," "On Standby," and "Going for Gold" captured something of the same yearning quality found in the better Oasis B-sides. Not as commercially successful as the bigger Britpop names but a genuine and underrated presence in the scene.</p>
+      <span class="band-connection">Northern Britpop</span>
+    </div>
+
+    <div class="band-card">
+      <h4>Kula Shaker</h4>
+      <div class="band-years">1994 – 1999, 2006 – present &nbsp;·&nbsp; London</div>
+      <p>Crispian Mills led this psychedelically inclined, Sanskrit-referencing guitar band who arrived in the Britpop's later phase with the impressively complex debut K (1996). Their blend of classic rock structures and Eastern mysticism gave them a distinctive identity. Noel Gallagher was publicly appreciative. Their Indian-influenced approach to guitar rock influenced the more psychedelic elements of Standing on the Shoulder of Giants.</p>
+      <span class="band-connection">Late Britpop</span>
+    </div>
+
+    <div class="band-card">
+      <h4>Primal Scream</h4>
+      <div class="band-years">1982 – present &nbsp;·&nbsp; Glasgow</div>
+      <p>Bobby Gillespie's band were Creation Records label-mates of Oasis and a crucial part of the same British musical ecosystem. Screamadelica (1991) is one of the genuinely revolutionary British rock albums — a fusion of rock, dance, gospel, and psychedelia that expanded the possibilities for what British guitar music could be. Noel Gallagher and Bobby Gillespie were friends and mutual admirers.</p>
+      <span class="band-connection">Creation Records label-mates</span>
+    </div>
+
+    <div class="band-card">
+      <h4>Radiohead</h4>
+      <div class="band-years">1985 – present &nbsp;·&nbsp; Abingdon</div>
+      <p>Oasis's relationship with Radiohead was primarily one of cultural opposition — the two bands represented divergent directions for British guitar music in the late 1990s. Where Oasis looked backward to the Beatles and Stones for inspiration, Radiohead looked forward to electronic music, minimalism, and conceptual ambition. OK Computer (1997), released the same summer as Be Here Now, offered a strikingly different account of late-1990s Britain. Noel was publicly dismissive of their approach; Thom Yorke was equally cool about Oasis.</p>
+      <span class="band-connection">Cultural counterpoint</span>
+    </div>
+
+    <div class="band-card">
+      <h4>Ride</h4>
+      <div class="band-years">1988 – 1996, 2014 – present &nbsp;·&nbsp; Oxford</div>
+      <p>One of the defining shoegaze bands — guitar-led, effects-drenched, and melodically rich. Their connection to Oasis is primarily through Andy Bell, Ride's guitarist and co-founder, who joined Oasis as bassist in 1999. Bell brought his considerable musicianship and compositional capabilities to the later Oasis records, and his shoegaze background can be heard in some of the more experimental passages of Standing on the Shoulder of Giants and Dig Out Your Soul.</p>
+      <span class="band-connection">Andy Bell's previous band</span>
+    </div>
+
+    <div class="band-card">
+      <h4>The Inspiral Carpets</h4>
+      <div class="band-years">1983 – 1995, 2003 – 2011 &nbsp;·&nbsp; Manchester</div>
+      <p>The band for whom Noel Gallagher served as a guitar tech and roadie in the early 1990s — making them, indirectly, one of the most important bands in Oasis's history. Noel learned the music industry from the inside while working for them, and the experience gave him a practical education that shaped everything that followed. Coolest Thing I Ever Did is a fine record. The name "Oasis" came from an Inspiral Carpets tour poster.</p>
+      <span class="band-connection">Noel's employer pre-Oasis</span>
+    </div>
+
+    <div class="band-card">
+      <h4>Beady Eye</h4>
+      <div class="band-years">2009 – 2014 &nbsp;·&nbsp; Manchester</div>
+      <p>The post-split band formed by Liam Gallagher with Gem Archer, Andy Bell, and Chris Sharrock. Essentially Oasis minus Noel, though they avoided covering any Oasis songs and pursued their own musical identity. Different Gear, Still Speeding (2011) drew on classic rock, Beatle-ish melody, and some of the looser psychedelic qualities of the later Oasis records. BE (2013) was more ambitious and experimental. Dissolved in 2014 when Liam opted to pursue a solo career.</p>
+      <span class="band-connection">Oasis post-split (Liam)</span>
+    </div>
+
+    <div class="band-card">
+      <h4>Noel Gallagher's High Flying Birds</h4>
+      <div class="band-years">2010 – present &nbsp;·&nbsp; Manchester/London</div>
+      <p>Noel's post-Oasis vehicle — a more deliberately crafted, production-conscious project that has given him the creative freedom he sought in the split. The self-titled debut (2011) contained "AKA… What a Life!" and "The Death of You and Me" — melodically assured pop-rock of the highest order. Who Built the Moon? (2017), produced by David Holmes, was the most sonically adventurous thing Noel has released, drawing on disco, Krautrock, and experimental pop. Consistently praised by critics.</p>
+      <span class="band-connection">Oasis post-split (Noel)</span>
+    </div>
+
+    <div class="band-card">
+      <h4>Paul Weller</h4>
+      <div class="band-years">Solo: 1991 – present &nbsp;·&nbsp; Woking</div>
+      <p>Strictly speaking a solo artist and not a band, but Weller's importance to Oasis warrants inclusion here. The "Modfather" — formerly of The Jam and The Style Council — became a close friend and mentor figure to the Gallagher brothers during the Britpop years. He played guitar on "Champagne Supernova." Noel has consistently cited him as the living British musician he most admires. The connection represents a direct link between the post-punk generation of the 1970s-80s and the Britpop generation of the 1990s — a line of influence from "Going Underground" to "Don't Look Back in Anger."</p>
+      <span class="band-connection">Mentor and collaborator</span>
+    </div>
+
+  </div>
+</div>
+</section>
+
+<footer>
+  <div class="footer-logo">OASIS</div>
+  <p>Manchester, England &nbsp;·&nbsp; 1991 – 2009 &nbsp;·&nbsp; Reunited 2025</p>
+  <p style="margin-top:0.5rem;">Liam Gallagher &nbsp;·&nbsp; Noel Gallagher &nbsp;·&nbsp; Paul Arthurs &nbsp;·&nbsp; Paul McGuigan &nbsp;·&nbsp; Tony McCarroll</p>
+  <p style="margin-top:0.5rem;">Alan White &nbsp;·&nbsp; Gem Archer &nbsp;·&nbsp; Andy Bell &nbsp;·&nbsp; Chris Sharrock</p>
+  <p style="margin-top:1.5rem;font-size:0.75rem;">"Maybe you're the same as me — we see things they'll never see."</p>
+</footer>
+
+<script>
+function toggleTrack(el) {
+  var desc = el.querySelector('.track-desc');
+  if (!desc) return;
+  var isOpen = el.classList.contains('open');
+  // Close all in same grid
+  var grid = el.closest('.tracks-grid');
+  if (grid) {
+    grid.querySelectorAll('.track-item').forEach(function(item) {
+      item.classList.remove('open');
+      var d = item.querySelector('.track-desc');
+      if (d) d.classList.remove('visible');
+    });
+  }
+  if (!isOpen) {
+    el.classList.add('open');
+    desc.classList.add('visible');
+  }
+}
+
+// Smooth active nav highlighting
+var sections = document.querySelectorAll('section[id]');
+var navLinks = document.querySelectorAll('nav ul li a');
+window.addEventListener('scroll', function() {
+  var scrollY = window.scrollY;
+  sections.forEach(function(section) {
+    var top = section.offsetTop - 80;
+    var bottom = top + section.offsetHeight;
+    if (scrollY >= top && scrollY < bottom) {
+      var id = section.getAttribute('id');
+      navLinks.forEach(function(link) {
+        link.style.color = link.getAttribute('href') === '#' + id ? '#c9a84c' : '';
+      });
+    }
+  });
+});
+</script>
+</body>
+</html>
