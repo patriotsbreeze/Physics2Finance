@@ -39,6 +39,10 @@ output:
   save_embeddings: true
   plot_results: true
 
+deeplob:
+  epochs: 50
+  patience: 10
+
 hardware:
   device: cuda
   batch_size: 256

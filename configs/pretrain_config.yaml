@@ -49,3 +49,8 @@ hardware:
   device: cuda
   fp16: true
   compile: false
+
+logging:
+  wandb: false           # set to true to enable W&B tracking
+  wandb_project: Physics2Finance
+  run_name: pretrain_fluid
