@@ -18,9 +18,9 @@ env/
 venv/
 ENV/
 
-# Data directories (large files)
-data/
-outputs/
+# Data directories (large files — top-level only)
+/data/
+/outputs/
 *.h5
 *.hdf5
 *.nc
