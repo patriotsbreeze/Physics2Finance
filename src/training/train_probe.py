@@ -25,6 +25,7 @@ import yaml
 from src.models.vit_backbone import PhysicsViT
 from src.models.linear_probe import MultiHorizonLinearProbe, PhysicsProbeModel
 from src.data.financial.fi2010_loader import FI2010Dataset
+from src.data.financial.binance_loader import BinanceDataset
 from src.data.financial.lob_to_heatmap import LOBHeatmapEncoder
 
 
@@ -97,6 +98,19 @@ def build_financial_datasets(cfg: dict) -> Tuple[Dataset, Dataset, Dataset]:
                 if len(ds) > 0:
                     container.append(ds)
 
+        elif name == "binance_btcusdt":
+            for split, container in [("train", train_datasets), ("val", val_datasets), ("test", test_datasets)]:
+                ds = BinanceDataset(
+                    data_path=path,
+                    split=split,
+                    window_size=window,
+                    horizons=horizons,
+                    lob_levels=levels,
+                    img_size=img_size,
+                )
+                if len(ds) > 0:
+                    container.append(ds)
+
     def concat_or_empty(dss):
         if not dss:
             logger.warning("Empty dataset split — check data paths")
@@ -132,6 +146,27 @@ def main(config_path: str = "configs/probe_config.yaml"):
 
     # Build financial datasets
     train_ds, val_ds, test_ds = build_financial_datasets(cfg)
+
+    # ── Save log_returns for GARCH baseline (bug #2 fix) ─────────────────────
+    # Collect log returns from all sub-datasets; GARCH needs the raw return series.
+    def _collect_log_returns(dataset):
+        if dataset is None:
+            return np.array([])
+        from torch.utils.data import ConcatDataset
+        parts = dataset.datasets if isinstance(dataset, ConcatDataset) else [dataset]
+        segments = []
+        for ds in parts:
+            if hasattr(ds, "get_log_returns"):
+                r = ds.get_log_returns()
+                if len(r):
+                    segments.append(r)
+        return np.concatenate(segments) if segments else np.array([])
+
+    all_log_returns = _collect_log_returns(train_ds)
+    if len(all_log_returns) > 0:
+        log_returns_path = output_dir.parent / "log_returns.npy"
+        np.save(log_returns_path, all_log_returns)
+        logger.info(f"Saved log_returns ({len(all_log_returns)} ticks) → {log_returns_path}")
 
     if train_ds is None:
         logger.error("No training data. Run scripts/download_data.sh and prepare financial data.")
@@ -177,7 +212,8 @@ def main(config_path: str = "configs/probe_config.yaml"):
         for h, metrics in results.items():
             logger.info(f"  Horizon {h}: {metrics}")
 
-        np.save(output_dir / "test_predictions.npy", test_preds)
+        # Save as npz with string keys to avoid int/np.int64 round-trip issues (bug #7 fix)
+        np.savez(output_dir / "test_predictions.npz", **{str(k): v for k, v in test_preds.items()})
 
     logger.info("Linear probe training complete.")
 
