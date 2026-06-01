@@ -8,7 +8,12 @@ processes only global views.
 WARNING: This is computationally expensive. On an A100 GPU:
   - vit_small: ~24h for 100 epochs
   - vit_base:  ~72h for 100 epochs
-Run with: python -m src.training.pretrain_fluid --config configs/pretrain_config.yaml
+
+Single-GPU:
+  python -m src.training.pretrain_fluid --config configs/pretrain_config.yaml
+
+Multi-GPU (DDP via torchrun):
+  torchrun --nproc_per_node=4 -m src.training.pretrain_fluid --config configs/pretrain_config.yaml
 """
 
 import os
@@ -22,7 +27,10 @@ from typing import Optional
 import torch
 import torch.nn as nn
 import torch.optim as optim
+import torch.distributed as dist
+from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.utils.data import DataLoader, ConcatDataset
+from torch.utils.data.distributed import DistributedSampler
 import numpy as np
 from loguru import logger
 import yaml
@@ -31,7 +39,35 @@ from src.models.vit_backbone import PhysicsViT, DINOHead
 from src.models.dino_loss import DINOLoss, MomentumUpdater
 from src.data.fluid_dynamics.jhtdb_loader import JHTDBDataset
 from src.data.fluid_dynamics.pdearena_loader import PDEArenaDataset
-from src.data.fluid_dynamics.preprocessing import MultiScalePatchExtractor
+from src.data.fluid_dynamics.preprocessing import MultiScalePatchExtractor, compute_dataset_channel_stats
+
+try:
+    import wandb
+    WANDB_AVAILABLE = True
+except ImportError:
+    WANDB_AVAILABLE = False
+
+
+def is_main_process() -> bool:
+    return not dist.is_available() or not dist.is_initialized() or dist.get_rank() == 0
+
+
+def setup_ddp():
+    """Initialize distributed training if launched via torchrun."""
+    if "RANK" in os.environ and "WORLD_SIZE" in os.environ:
+        rank       = int(os.environ["RANK"])
+        world_size = int(os.environ["WORLD_SIZE"])
+        local_rank = int(os.environ.get("LOCAL_RANK", 0))
+        dist.init_process_group(backend="nccl", rank=rank, world_size=world_size)
+        torch.cuda.set_device(local_rank)
+        logger.info(f"DDP: rank={rank}/{world_size}, local_rank={local_rank}")
+        return local_rank, world_size
+    return 0, 1
+
+
+def cleanup_ddp():
+    if dist.is_available() and dist.is_initialized():
+        dist.destroy_process_group()
 
 
 def build_dataset(cfg: dict, split: str = "train") -> ConcatDataset:
@@ -181,39 +217,78 @@ def train_one_epoch(
 
 
 def main(config_path: str = "configs/pretrain_config.yaml"):
+    # ── DDP setup ─────────────────────────────────────────────────────────────
+    local_rank, world_size = setup_ddp()
+    is_main = is_main_process()
+
     with open(config_path) as f:
         cfg = yaml.safe_load(f)
 
     output_dir = Path(cfg["training"]["output_dir"])
-    output_dir.mkdir(parents=True, exist_ok=True)
-    device = torch.device(cfg["hardware"]["device"] if torch.cuda.is_available() else "cpu")
-    logger.info(f"Training on device: {device}")
+    if is_main:
+        output_dir.mkdir(parents=True, exist_ok=True)
 
-    # Build datasets
+    if dist.is_available() and dist.is_initialized():
+        device = torch.device(f"cuda:{local_rank}")
+    else:
+        device = torch.device(cfg["hardware"]["device"] if torch.cuda.is_available() else "cpu")
+    logger.info(f"Training on device: {device} (world_size={world_size})")
+
+    # ── W&B initialization ────────────────────────────────────────────────────
+    use_wandb = WANDB_AVAILABLE and cfg.get("logging", {}).get("wandb", False) and is_main
+    if use_wandb:
+        wandb.init(
+            project=cfg.get("logging", {}).get("wandb_project", "Physics2Finance"),
+            name=cfg.get("logging", {}).get("run_name", "pretrain_fluid"),
+            config=cfg,
+        )
+        logger.info("W&B initialized")
+
+    # ── Build datasets ────────────────────────────────────────────────────────
     train_dataset = build_dataset(cfg, split="train")
-    val_dataset = build_dataset(cfg, split="val")
+    val_dataset   = build_dataset(cfg, split="val")
 
-    extractor = MultiScalePatchExtractor(
+    # ── Compute PhysicalFieldNorm statistics (gap #13 fix) ────────────────────
+    if is_main:
+        logger.info("Computing dataset channel statistics for PhysicalFieldNorm...")
+        norm_mean, norm_std = compute_dataset_channel_stats(
+            train_dataset, n_samples=500
+        )
+        logger.info(f"  Channel mean: {norm_mean.squeeze()}")
+        logger.info(f"  Channel std:  {norm_std.squeeze()}")
+    else:
+        norm_mean = torch.zeros(1, 3, 1, 1)
+        norm_std  = torch.ones(1, 3, 1, 1)
+
+    if dist.is_available() and dist.is_initialized():
+        dist.broadcast(norm_mean, src=0)
+        dist.broadcast(norm_std,  src=0)
+
+    extractor  = MultiScalePatchExtractor(
         img_size=cfg["model"]["img_size"],
         global_crops_scale=cfg["dino"]["global_crops_scale"],
         local_crops_scale=cfg["dino"]["local_crops_scale"],
         n_local_crops=cfg["dino"]["local_crops_number"],
     )
     collate_fn = DINOCollate(extractor)
+    n_crops    = 2 + cfg["dino"]["local_crops_number"]
 
-    n_crops = 2 + cfg["dino"]["local_crops_number"]
+    # ── DataLoaders with DistributedSampler ───────────────────────────────────
+    train_sampler = DistributedSampler(train_dataset, shuffle=True) \
+        if (dist.is_available() and dist.is_initialized()) else None
 
     train_loader = DataLoader(
         train_dataset,
         batch_size=cfg["training"]["batch_size"],
-        shuffle=True,
+        shuffle=(train_sampler is None),
+        sampler=train_sampler,
         num_workers=cfg["training"]["num_workers"],
         pin_memory=True,
         drop_last=True,
         collate_fn=collate_fn,
     )
 
-    # Build student and teacher (same architecture, EMA weights)
+    # ── Build student and teacher ─────────────────────────────────────────────
     student = PhysicsViT(
         arch=cfg["model"]["arch"],
         img_size=cfg["model"]["img_size"],
@@ -221,13 +296,25 @@ def main(config_path: str = "configs/pretrain_config.yaml"):
         in_chans=cfg["model"]["in_chans"],
     ).to(device)
 
+    # Apply computed channel statistics to PhysicalFieldNorm (gap #13 fix)
+    student.field_norm.update_stats(norm_mean.squeeze(0), norm_std.squeeze(0))
+
     teacher = copy.deepcopy(student)
     teacher.freeze()
 
+    # Wrap student in DDP
+    if dist.is_available() and dist.is_initialized():
+        student = DDP(student, device_ids=[local_rank], find_unused_parameters=False)
+        student_module = student.module
+    else:
+        student_module = student
+
     student_head = DINOHead(
-        in_dim=student.embed_dim,
+        in_dim=student_module.embed_dim,
         out_dim=cfg["dino"]["out_dim"],
     ).to(device)
+    if dist.is_available() and dist.is_initialized():
+        student_head = DDP(student_head, device_ids=[local_rank])
 
     teacher_head = DINOHead(
         in_dim=teacher.embed_dim,
@@ -245,7 +332,9 @@ def main(config_path: str = "configs/pretrain_config.yaml"):
         n_epochs=cfg["training"]["epochs"],
     ).to(device)
 
-    params = list(student.parameters()) + list(student_head.parameters())
+    params = (
+        list(student.parameters()) + list(student_head.parameters())
+    )
     optimizer = optim.AdamW(
         params,
         lr=cfg["training"]["base_lr"],
@@ -258,14 +347,16 @@ def main(config_path: str = "configs/pretrain_config.yaml"):
         min_lr=cfg["training"]["min_lr"],
         base_lr=cfg["training"]["base_lr"],
     )
-    momentum_updater = MomentumUpdater(
-        base_momentum=cfg["dino"]["momentum_teacher"],
-    )
-    scaler = torch.cuda.amp.GradScaler() if (cfg["hardware"]["fp16"] and device.type == "cuda") else None
+    momentum_updater = MomentumUpdater(base_momentum=cfg["dino"]["momentum_teacher"])
+    scaler = torch.cuda.amp.GradScaler() \
+        if (cfg["hardware"]["fp16"] and device.type == "cuda") else None
 
-    # Training loop
+    # ── Training loop ─────────────────────────────────────────────────────────
     best_loss = float("inf")
     for epoch in range(cfg["training"]["epochs"]):
+        if train_sampler is not None:
+            train_sampler.set_epoch(epoch)
+
         train_loss = train_one_epoch(
             student, teacher, student_head, teacher_head,
             criterion, optimizer, train_loader, epoch, cfg,
@@ -273,26 +364,45 @@ def main(config_path: str = "configs/pretrain_config.yaml"):
         )
         scheduler.step()
 
-        logger.info(f"Epoch {epoch}: train_loss={train_loss:.4f}")
+        if is_main:
+            logger.info(f"Epoch {epoch}: train_loss={train_loss:.4f}")
+            if use_wandb:
+                wandb.log({"train/loss": train_loss, "epoch": epoch,
+                           "lr": optimizer.param_groups[0]["lr"]})
 
-        if epoch % cfg["training"]["save_every"] == 0 or train_loss < best_loss:
-            ckpt = {
-                "epoch": epoch,
-                "student": student.state_dict(),
-                "teacher": teacher.state_dict(),
-                "student_head": student_head.state_dict(),
-                "teacher_head": teacher_head.state_dict(),
-                "optimizer": optimizer.state_dict(),
-                "loss": train_loss,
-                "cfg": cfg,
-            }
-            torch.save(ckpt, output_dir / f"checkpoint_epoch{epoch:04d}.pth")
-            if train_loss < best_loss:
-                best_loss = train_loss
-                torch.save(ckpt, output_dir / "checkpoint_best.pth")
-                logger.info(f"New best checkpoint: loss={best_loss:.4f}")
+            if epoch % cfg["training"]["save_every"] == 0 or train_loss < best_loss:
+                # Save teacher backbone (no DDP wrapper)
+                teacher_state = teacher.state_dict() \
+                    if not isinstance(teacher, DDP) else teacher.module.state_dict()
+                student_state = student.state_dict() \
+                    if not isinstance(student, DDP) else student.module.state_dict()
+                ckpt = {
+                    "epoch":        epoch,
+                    "student":      student_state,
+                    "teacher":      teacher_state,
+                    "student_head": student_head.state_dict()
+                        if not isinstance(student_head, DDP) else student_head.module.state_dict(),
+                    "teacher_head": teacher_head.state_dict(),
+                    "optimizer":    optimizer.state_dict(),
+                    "loss":         train_loss,
+                    "cfg":          cfg,
+                    "field_norm_mean": norm_mean.cpu(),
+                    "field_norm_std":  norm_std.cpu(),
+                }
+                torch.save(ckpt, output_dir / f"checkpoint_epoch{epoch:04d}.pth")
+                if train_loss < best_loss:
+                    best_loss = train_loss
+                    torch.save(ckpt, output_dir / "checkpoint_best.pth")
+                    logger.info(f"New best checkpoint: loss={best_loss:.4f}")
+                    if use_wandb:
+                        wandb.run.summary["best_loss"] = best_loss
 
-    logger.info("Pre-training complete.")
+    if is_main:
+        logger.info("Pre-training complete.")
+        if use_wandb:
+            wandb.finish()
+
+    cleanup_ddp()
 
 
 if __name__ == "__main__":

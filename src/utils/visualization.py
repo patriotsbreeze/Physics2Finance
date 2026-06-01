@@ -15,6 +15,7 @@ import matplotlib.gridspec as gridspec
 from matplotlib.colors import TwoSlopeNorm
 from typing import Dict, List, Optional, Tuple
 from pathlib import Path
+from loguru import logger
 
 
 def plot_fluid_vs_lob(
@@ -187,3 +188,108 @@ def plot_metrics_table(
     if save_path:
         fig.savefig(save_path, dpi=150, bbox_inches="tight")
     return fig
+
+
+def plot_embedding_projection(
+    embeddings: np.ndarray,
+    labels: Optional[np.ndarray] = None,
+    method: str = "umap",
+    n_components: int = 2,
+    title: str = "Latent Embedding Projection",
+    label_names: Optional[Dict[int, str]] = None,
+    save_path: Optional[str] = None,
+    random_state: int = 42,
+    n_neighbors: int = 15,
+    min_dist: float = 0.1,
+    perplexity: float = 30.0,
+    max_samples: int = 5000,
+) -> plt.Figure:
+    """
+    2D UMAP or t-SNE projection of backbone embeddings.
+
+    Shows whether physics embeddings cluster LOB states meaningfully — a key
+    qualitative result for the paper demonstrating cross-domain structure.
+
+    Args:
+        embeddings:  (N, D) backbone embeddings.
+        labels:      (N,) optional color labels (e.g., RV quantile bins).
+        method:      "umap" or "tsne".
+        label_names: map from integer label to human-readable string.
+        max_samples: subsample if N > this for speed.
+    """
+    if len(embeddings) > max_samples:
+        rng = np.random.default_rng(random_state)
+        idx = rng.choice(len(embeddings), max_samples, replace=False)
+        embeddings = embeddings[idx]
+        if labels is not None:
+            labels = labels[idx]
+        logger.info(f"Subsampled to {max_samples} for {method}")
+
+    method = method.lower()
+    if method == "umap":
+        try:
+            import umap as umap_lib
+        except ImportError:
+            raise ImportError("umap-learn not installed: pip install umap-learn")
+        reducer = umap_lib.UMAP(
+            n_components=n_components,
+            n_neighbors=n_neighbors,
+            min_dist=min_dist,
+            random_state=random_state,
+            verbose=False,
+        )
+        proj = reducer.fit_transform(embeddings)
+        method_label = "UMAP"
+    elif method == "tsne":
+        from sklearn.manifold import TSNE
+        proj = TSNE(
+            n_components=n_components,
+            perplexity=perplexity,
+            random_state=random_state,
+            n_jobs=-1,
+        ).fit_transform(embeddings)
+        method_label = "t-SNE"
+    else:
+        raise ValueError(f"Unknown method '{method}'. Use 'umap' or 'tsne'.")
+
+    logger.info(f"{method_label}: {embeddings.shape} → {proj.shape}")
+
+    fig, ax = plt.subplots(figsize=(10, 8))
+
+    if labels is not None:
+        unique_labels = np.unique(labels)
+        cmap = plt.cm.get_cmap("viridis", len(unique_labels))
+        for i, lbl in enumerate(unique_labels):
+            mask = labels == lbl
+            name = (label_names or {}).get(int(lbl), str(lbl))
+            ax.scatter(proj[mask, 0], proj[mask, 1], c=[cmap(i)],
+                       label=name, s=4, alpha=0.6, rasterized=True)
+        ax.legend(markerscale=3, fontsize=9, title="Label", title_fontsize=10)
+    else:
+        ax.scatter(proj[:, 0], proj[:, 1], s=3, alpha=0.4,
+                   c="steelblue", rasterized=True)
+
+    ax.set_xlabel(f"{method_label} dim 1", fontsize=12)
+    ax.set_ylabel(f"{method_label} dim 2", fontsize=12)
+    ax.set_title(title, fontsize=14, fontweight="bold")
+    ax.grid(True, alpha=0.2)
+    plt.tight_layout()
+
+    if save_path:
+        fig.savefig(save_path, dpi=150, bbox_inches="tight")
+        logger.info(f"Saved embedding projection → {save_path}")
+    return fig
+
+
+def make_rv_quantile_labels(
+    rv_targets: np.ndarray,
+    n_quantiles: int = 5,
+) -> Tuple[np.ndarray, Dict[int, str]]:
+    """Bin RV values into quantile labels for coloring embedding projections."""
+    quantiles = np.quantile(rv_targets, np.linspace(0, 1, n_quantiles + 1))
+    labels = np.digitize(rv_targets, quantiles[1:-1])
+    label_names = {
+        i: f"RV Q{i+1} ({quantiles[i]:.2e}–{quantiles[i+1]:.2e})"
+        for i in range(n_quantiles)
+    }
+    return labels.astype(np.int32), label_names
