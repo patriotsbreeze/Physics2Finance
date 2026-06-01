@@ -65,15 +65,25 @@ class PDEArenaDataset(Dataset):
         self._index: List[dict] = []   # list of {file, traj_idx, frame_idx}
         self._build_index()
 
+    # PDEArena NavierStokes-2D actual field names (vx=x-velocity, vy=y-velocity, u=buoyancy)
+    # Maps our logical channel names to actual HDF5 dataset names inside the split group
+    _CHANNEL_MAP = {
+        "u":  ["vx", "u_x", "u"],    # x-velocity (try vx first)
+        "v":  ["vy", "u_y", "v"],    # y-velocity
+        "p":  ["u",  "p",   "buo_y"],# buoyancy/pressure scalar
+    }
+
     def _build_index(self):
         if not HDF5_AVAILABLE:
             logger.error("h5py required — install with: pip install h5py")
             return
 
-        # Recurse into data_dir looking for HDF5 files matching the split
+        # PDEArena files are named NavierStokes2D_{split}_*.h5
+        # The split name in filenames uses "valid" not "val"
+        split_tag = "valid" if self.split == "val" else self.split
         patterns = [
-            str(self.data_dir / "**" / f"*{self.split}*.h5"),
-            str(self.data_dir / "**" / f"*{self.split}*.hdf5"),
+            str(self.data_dir / "**" / f"*{split_tag}*.h5"),
+            str(self.data_dir / "**" / f"*{split_tag}*.hdf5"),
         ]
         h5_files = []
         for pat in patterns:
@@ -82,29 +92,45 @@ class PDEArenaDataset(Dataset):
 
         if not h5_files:
             logger.warning(
-                f"No HDF5 files found for split='{self.split}' in {self.data_dir}. "
-                "Run: bash scripts/download_data.sh --pdearena"
+                f"No HDF5 files found for split='{self.split}' (tag='{split_tag}') "
+                f"in {self.data_dir}. Run: bash scripts/download_data.sh --pdearena"
             )
             return
 
         for fpath in h5_files:
             try:
                 with h5py.File(fpath, "r") as hf:
-                    # Determine available channel arrays
+                    # PDEArena files have a top-level group named after the split
+                    # e.g. hf["train"]["vx"] shape (N, T, H, W)
+                    group = None
+                    for gname in [split_tag, self.split, "data"]:
+                        if gname in hf:
+                            group = hf[gname]
+                            break
+                    if group is None:
+                        # Flat file — try top-level directly
+                        group = hf
+
+                    group_keys = list(group.keys())
+
+                    # Resolve logical channel → actual key
                     available = {}
-                    for ch in self.channels:
-                        for key in [ch, f"field_{ch}", ch.upper()]:
-                            if key in hf:
-                                available[ch] = key
+                    for logical_ch in self.channels:
+                        candidates = self._CHANNEL_MAP.get(logical_ch, [logical_ch])
+                        for cand in candidates:
+                            if cand in group_keys and hasattr(group[cand], "shape"):
+                                available[logical_ch] = cand
                                 break
 
                     if not available:
-                        logger.warning(f"  No matching channels in {fpath} (keys: {list(hf.keys())})")
+                        logger.warning(
+                            f"  No matching channels in {fpath} "
+                            f"(group keys: {group_keys}, wanted: {self.channels})"
+                        )
                         continue
 
-                    # Shape: (N_traj, T_steps, H, W)
                     ref_key = list(available.values())[0]
-                    shape = hf[ref_key].shape
+                    shape = group[ref_key].shape   # (N_traj, T_steps, H, W)
                     if len(shape) == 4:
                         n_traj, n_time = shape[0], shape[1]
                     elif len(shape) == 3:
@@ -117,10 +143,10 @@ class PDEArenaDataset(Dataset):
                         for t in range(n_time):
                             self._index.append({
                                 "file":       fpath,
+                                "group_name": split_tag if split_tag in hf else None,
                                 "available":  available,
                                 "traj_idx":   i,
                                 "frame_idx":  t,
-                                "n_time":     n_time,
                             })
                             count += 1
                             if self.max_samples_per_file and count >= self.max_samples_per_file:
@@ -128,7 +154,8 @@ class PDEArenaDataset(Dataset):
                         if self.max_samples_per_file and count >= self.max_samples_per_file:
                             break
 
-                    logger.info(f"  PDEArena {self.split}: {fpath} → {count} frames")
+                    logger.info(f"  PDEArena {self.split}: {fpath} → {count} frames "
+                                f"({n_traj} traj × {n_time} steps)")
             except Exception as e:
                 logger.error(f"  Error indexing {fpath}: {e}")
 
@@ -142,13 +169,17 @@ class PDEArenaDataset(Dataset):
 
         channels = []
         with h5py.File(info["file"], "r") as hf:
+            # Navigate to the split group if present
+            group_name = info.get("group_name")
+            node = hf[group_name] if (group_name and group_name in hf) else hf
+
             for ch in self.channels:
                 key = info["available"].get(ch)
-                if key is None:
+                if key is None or key not in node:
                     channels.append(np.zeros((self.img_size, self.img_size), dtype=np.float32))
                     continue
 
-                arr = hf[key]
+                arr = node[key]
                 if arr.ndim == 4:
                     frame = arr[info["traj_idx"], info["frame_idx"]]   # (H, W)
                 elif arr.ndim == 3:
@@ -156,7 +187,7 @@ class PDEArenaDataset(Dataset):
                 else:
                     frame = arr[:]
 
-                channels.append(frame.astype(np.float32))
+                channels.append(np.array(frame, dtype=np.float32))
 
         # Stack and resize to (3, img_size, img_size)
         img = np.stack(channels, axis=0)   # (3, H, W)
