@@ -1,0 +1,51 @@
+model:
+  arch: vit_base_patch16_224
+  img_size: 224
+  patch_size: 16
+  embed_dim: 768
+  depth: 12
+  num_heads: 12
+  mlp_ratio: 4.0
+  in_chans: 3  # u, v, p channels mapped to RGB
+
+dino:
+  out_dim: 65536
+  local_crops_number: 8
+  local_crops_scale: [0.05, 0.4]
+  global_crops_scale: [0.4, 1.0]
+  teacher_temp: 0.04
+  student_temp: 0.1
+  center_momentum: 0.9
+  momentum_teacher: 0.996
+
+training:
+  epochs: 100
+  warmup_epochs: 10
+  batch_size: 64
+  base_lr: 0.0005
+  min_lr: 1.0e-6
+  weight_decay: 0.04
+  weight_decay_end: 0.4
+  clip_grad: 3.0
+  freeze_last_layer: 1
+  num_workers: 8
+  save_every: 10
+  output_dir: outputs/pretrain
+
+data:
+  datasets:
+    - name: pdearena
+      path: data/pdearena
+      weight: 0.6
+    - name: jhtdb
+      path: data/jhtdb
+      weight: 0.4
+  img_size: 224
+  channels: [u, v, p]  # velocity x, velocity y, pressure
+  normalize: true
+  augment: true
+
+hardware:
+  device: cuda
+  fp16: true
+  compile: false

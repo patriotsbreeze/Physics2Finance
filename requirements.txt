@@ -1,0 +1,44 @@
+# Core ML
+torch>=2.1.0
+torchvision>=0.16.0
+numpy>=1.24.0
+scipy>=1.11.0
+
+# Vision Transformers & Foundation Models
+timm>=0.9.12
+einops>=0.7.0
+transformers>=4.35.0
+
+# Fluid dynamics data
+h5py>=3.10.0
+netCDF4>=1.6.5
+xarray>=2023.12.0
+
+# Financial data
+ccxt>=4.2.0
+pandas>=2.1.0
+pyarrow>=14.0.0
+requests>=2.31.0
+
+# Statistical modeling
+arch>=6.3.0
+statsmodels>=0.14.0
+
+# Evaluation & metrics
+scikit-learn>=1.3.0
+
+# Visualization
+matplotlib>=3.8.0
+seaborn>=0.13.0
+plotly>=5.18.0
+
+# Configuration
+pyyaml>=6.0.1
+hydra-core>=1.3.2
+omegaconf>=2.3.0
+
+# Utilities
+tqdm>=4.66.0
+loguru>=0.7.0
+rich>=13.7.0
+python-dotenv>=1.0.0
