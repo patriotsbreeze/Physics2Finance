@@ -23,97 +23,71 @@ def build_dollar_bars(
     side_col: Optional[str] = "is_buyer_maker",
 ) -> pd.DataFrame:
     """
-    Aggregate trades into dollar bars.
+    Aggregate trades into dollar bars using vectorized cumsum + groupby.
 
     Each bar closes when cumulative dollar volume (price × qty) exceeds
-    `dollar_threshold`.  Returns OHLCV + buy/sell volume split.
+    `dollar_threshold`.  Memory-efficient — no Python-level row iteration.
 
-    Args:
-        trades: DataFrame of individual trades, sorted by timestamp.
-        dollar_threshold: dollar volume per bar (e.g., 1_000_000 for $1M bars).
-        price_col, qty_col, timestamp_col: column names.
-        side_col: column indicating whether buyer was maker (Binance aggTrades).
-                  None → no buy/sell split.
-
-    Returns:
-        DataFrame with columns:
-          timestamp_open, timestamp_close, open, high, low, close,
-          volume, dollar_volume, buy_volume, sell_volume, n_trades
+    Returns DataFrame with columns:
+      timestamp_open, timestamp_close, open, high, low, close,
+      volume, dollar_volume, buy_volume, sell_volume, n_trades
     """
     trades = trades.sort_values(timestamp_col).reset_index(drop=True)
 
-    bars = []
-    bar_open = None
-    bar_high = -np.inf
-    bar_low = np.inf
-    bar_vol = 0.0
-    bar_dollar = 0.0
-    bar_buy_vol = 0.0
-    bar_sell_vol = 0.0
-    bar_n = 0
-    bar_ts_open = None
+    price = trades[price_col].to_numpy(dtype=np.float64)
+    qty   = trades[qty_col].to_numpy(dtype=np.float64)
+    ts    = trades[timestamp_col].to_numpy()
 
-    for _, row in trades.iterrows():
-        p = float(row[price_col])
-        q = float(row[qty_col])
-        ts = row[timestamp_col]
-        dollar = p * q
+    dollar = price * qty
+    cum_dollar = np.cumsum(dollar)
 
-        if bar_open is None:
-            bar_open = p
-            bar_ts_open = ts
+    # Bar ID for each trade: integer division of cumulative dollar by threshold
+    bar_id = (cum_dollar / dollar_threshold).astype(np.int64)
 
-        bar_high = max(bar_high, p)
-        bar_low = min(bar_low, p)
-        bar_close = p
-        bar_vol += q
-        bar_dollar += dollar
-        bar_n += 1
+    # Build bar index arrays (first/last trade index per bar)
+    _, first_idx = np.unique(bar_id, return_index=True)
+    last_idx = np.append(first_idx[1:] - 1, len(bar_id) - 1)
+    bar_lengths = np.diff(np.append(first_idx, len(bar_id)))
 
-        if side_col and side_col in row.index:
-            # Binance: is_buyer_maker=True means the buyer was the passive side
-            # → the aggressive order was a sell → this is a sell-initiated trade
-            if row[side_col]:
-                bar_sell_vol += q
-            else:
-                bar_buy_vol += q
+    # OHLCV via numpy reduceat — no DataFrame copy, O(N) time and memory
+    open_  = price[first_idx]
+    close_ = price[last_idx]
+    high_  = np.maximum.reduceat(price, first_idx)
+    low_   = np.minimum.reduceat(price, first_idx)
+    vol_   = np.add.reduceat(qty,    first_idx)
+    dvol_  = np.add.reduceat(dollar, first_idx)
+    n_     = bar_lengths
+    ts_open_  = ts[first_idx]
+    ts_close_ = ts[last_idx]
 
-        if bar_dollar >= dollar_threshold:
-            bars.append({
-                "timestamp_open":  bar_ts_open,
-                "timestamp_close": ts,
-                "open":            bar_open,
-                "high":            bar_high,
-                "low":             bar_low,
-                "close":           bar_close,
-                "volume":          bar_vol,
-                "dollar_volume":   bar_dollar,
-                "buy_volume":      bar_buy_vol,
-                "sell_volume":     bar_sell_vol,
-                "n_trades":        bar_n,
-            })
-            bar_open = None
-            bar_high = -np.inf
-            bar_low = np.inf
-            bar_vol = 0.0
-            bar_dollar = 0.0
-            bar_buy_vol = 0.0
-            bar_sell_vol = 0.0
-            bar_n = 0
-            bar_ts_open = None
+    buy_vol  = np.zeros(len(open_))
+    sell_vol = np.zeros(len(open_))
+    if side_col and side_col in trades.columns:
+        is_bm    = trades[side_col].to_numpy(dtype=bool)
+        buy_qty  = np.where(~is_bm, qty, 0.0)
+        sell_qty = np.where( is_bm, qty, 0.0)
+        buy_vol  = np.add.reduceat(buy_qty,  first_idx)
+        sell_vol = np.add.reduceat(sell_qty, first_idx)
 
-    if bars:
-        df = pd.DataFrame(bars)
-        logger.info(
-            f"Built {len(df)} dollar bars "
-            f"(threshold=${dollar_threshold:,.0f}, "
-            f"{len(trades)} trades in)"
-        )
-        return df
-    return pd.DataFrame(columns=[
-        "timestamp_open", "timestamp_close", "open", "high", "low", "close",
-        "volume", "dollar_volume", "buy_volume", "sell_volume", "n_trades",
-    ])
+    result = pd.DataFrame({
+        "timestamp_open":  ts_open_,
+        "timestamp_close": ts_close_,
+        "open":            open_,
+        "high":            high_,
+        "low":             low_,
+        "close":           close_,
+        "volume":          vol_,
+        "dollar_volume":   dvol_,
+        "buy_volume":      buy_vol,
+        "sell_volume":     sell_vol,
+        "n_trades":        n_,
+    })
+
+    logger.info(
+        f"Built {len(result)} dollar bars "
+        f"(threshold=${dollar_threshold:,.0f}, {len(trades):,} trades in)"
+    )
+    return result
 
 
 def build_volume_bars(
@@ -205,10 +179,11 @@ def compute_dollar_threshold(
     Auto-compute dollar threshold to produce approximately `bars_per_day` bars.
     Uses the median daily dollar volume divided by target bar count.
     """
-    trades = trades.copy()
-    trades["dollar"] = trades[price_col].astype(float) * trades[qty_col].astype(float)
-    trades["date"] = pd.to_datetime(trades[timestamp_col], unit="ms").dt.date
-    daily_dollar = trades.groupby("date")["dollar"].sum()
+    dollar = trades[price_col].to_numpy(dtype=np.float64) * trades[qty_col].to_numpy(dtype=np.float64)
+    dates  = pd.to_datetime(trades[timestamp_col], unit="ms").dt.date.to_numpy()
+    unique_dates, date_idx = np.unique(dates, return_inverse=True)
+    daily_sums = np.bincount(date_idx, weights=dollar)
+    daily_dollar = pd.Series(daily_sums, index=unique_dates)
     median_daily = daily_dollar.median()
     threshold = median_daily / bars_per_day
     logger.info(

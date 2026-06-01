@@ -111,20 +111,29 @@ class BinanceDataDownloader:
         if not all_trades:
             raise RuntimeError("No trade data downloaded.")
 
-        trades = pd.concat(all_trades, ignore_index=True)
-        trades = trades.sort_values("timestamp").reset_index(drop=True)
-
-        # Filter to requested date range
+        # Estimate threshold from first month — avoids holding all months in RAM
         ts_start = int(start.timestamp() * 1000)
         ts_end   = int((end + timedelta(days=1)).timestamp() * 1000)
-        trades = trades[(trades["timestamp"] >= ts_start) & (trades["timestamp"] < ts_end)]
+        threshold = compute_dollar_threshold(all_trades[0], bars_per_day=bars_per_day)
 
-        # Dollar-bar resampling
-        threshold = compute_dollar_threshold(trades, bars_per_day=bars_per_day)
-        bars = build_dollar_bars(trades, dollar_threshold=threshold)
+        # Process each month independently: build bars + LOB, then discard raw trades
+        all_bars = []
+        for trades_month in all_trades:
+            trades_month = trades_month[
+                (trades_month["timestamp"] >= ts_start) &
+                (trades_month["timestamp"] < ts_end)
+            ].copy()
+            if len(trades_month) == 0:
+                continue
+            bars_month = build_dollar_bars(trades_month, dollar_threshold=threshold)
+            bars_month = self._add_synthetic_lob(bars_month, trades_month, lob_levels=10)
+            all_bars.append(bars_month)
 
-        # Add synthetic LOB columns from buy/sell split
-        bars = self._add_synthetic_lob(bars, trades, lob_levels=10)
+        if not all_bars:
+            raise RuntimeError("No bars produced after date filtering.")
+
+        bars = pd.concat(all_bars, ignore_index=True)
+        bars = bars.sort_values("timestamp_open").reset_index(drop=True)
 
         out_path = self.data_dir.parent / f"binance_{symbol.lower()}.parquet"
         bars.to_parquet(out_path, index=False)
