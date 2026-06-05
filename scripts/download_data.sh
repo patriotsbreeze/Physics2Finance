@@ -79,14 +79,22 @@ if [ "$FI2010" -eq 1 ]; then
   FI2010_DIR="$DATA_DIR/financial/fi2010"
   mkdir -p "$FI2010_DIR"
 
-  # FI-2010 is hosted on UCI ML Repository / the original paper's supplementary
-  FI2010_URL="https://etsin.fairdata.fi/dataset/73eb48d7-4dbc-4a10-a52a-da745b47a649"
-  echo "  FI-2010 requires manual download from:"
-  echo "  $FI2010_URL"
-  echo "  Place the .txt files in: $FI2010_DIR/"
+  echo "  FI-2010 requires manual download. Two options:"
   echo ""
-  echo "  Alternatively, use the Kaggle mirror:"
-  echo "  kaggle datasets download -d mczielinski/bitcoin-historical-data"
+  echo "  OPTION A — Kaggle (fastest):"
+  echo "    1. Go to https://www.kaggle.com/datasets/pythonapipackage/fi2010"
+  echo "    2. Download and unzip"
+  echo "    3. Place .txt files in: $FI2010_DIR/"
+  echo ""
+  echo "  OPTION B — DeepLOB GitHub mirror:"
+  echo "    The DeepLOB repo hosts the exact files needed:"
+  echo "    https://github.com/zcakhaa/DeepLOB-Deep-Convolutional-Neural-Networks-for-Limit-Order-Books"
+  echo "    Download: Train_Dst_NoAuction_DecPre_CF_7.txt"
+  echo "              Test_Dst_NoAuction_DecPre_CF_7.txt"
+  echo "    Place in: $FI2010_DIR/"
+  echo ""
+  echo "  OPTION C — Finnish Fairdata (authoritative, may require registration):"
+  echo "    https://etsin.fairdata.fi/dataset/73eb48d7-4dbc-4a10-a52a-da745b47a649"
 fi
 
 # ─── Binance ─────────────────────────────────────────────────────────────────

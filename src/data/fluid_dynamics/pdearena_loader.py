@@ -198,9 +198,14 @@ class PDEArenaDataset(Dataset):
         if self.normalize:
             for c in range(t.shape[0]):
                 ch = t[c]
-                mn, mx = ch.min(), ch.max()
-                if mx > mn:
-                    t[c] = (ch - mn) / (mx - mn)
+                mu = ch.mean()
+                sigma = ch.std()
+                if sigma > 1e-6:
+                    lo = mu - 3.0 * sigma
+                    hi = mu + 3.0 * sigma
+                    t[c] = 2.0 * (ch.clamp(lo, hi) - lo) / (hi - lo) - 1.0
+                else:
+                    t[c] = torch.zeros_like(ch)
 
         return {
             "image": t,

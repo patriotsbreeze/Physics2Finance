@@ -1,16 +1,16 @@
 model:
-  arch: vit_base_patch16_224
+  arch: vit_small_patch16_224  # T4 (16GB): vit_base OOMs at batch=32 with 6 crops
   img_size: 224
   patch_size: 16
-  embed_dim: 768
+  embed_dim: 384               # vit_small embed dim
   depth: 12
-  num_heads: 12
+  num_heads: 6                 # vit_small heads
   mlp_ratio: 4.0
-  in_chans: 3  # u, v, p channels mapped to RGB
+  in_chans: 3                  # u (price advection), v (volume flux), p (pressure density)
 
 dino:
   out_dim: 65536
-  local_crops_number: 8
+  local_crops_number: 4        # reduced from 8 — halves augmentation VRAM cost
   local_crops_scale: [0.05, 0.4]
   global_crops_scale: [0.4, 1.0]
   teacher_temp: 0.04
@@ -19,38 +19,34 @@ dino:
   momentum_teacher: 0.996
 
 training:
-  epochs: 100
-  warmup_epochs: 10
-  batch_size: 64
+  epochs: 50                   # budget: ~40h on T4 preemptible (~$14)
+  warmup_epochs: 5
+  batch_size: 32               # T4 safe with vit_small + 6 crops + fp16
   base_lr: 0.0005
   min_lr: 1.0e-6
   weight_decay: 0.04
   weight_decay_end: 0.4
   clip_grad: 3.0
   freeze_last_layer: 1
-  num_workers: 8
-  save_every: 10
+  num_workers: 4               # T4 VMs typically have 4 vCPUs
+  save_every: 5
   output_dir: outputs/pretrain
 
 data:
   datasets:
     - name: pdearena
-      path: data/pdearena
-      weight: 0.6
-    - name: jhtdb
-      path: data/jhtdb
-      weight: 0.4
+      path: data/pdearena       # 2.75 GB already downloaded
   img_size: 224
-  channels: [u, v, p]  # velocity x, velocity y, pressure
+  channels: [u, v, p]          # x-velocity, y-velocity, pressure — match LOB heatmap
   normalize: true
   augment: true
 
 hardware:
   device: cuda
-  fp16: true
+  fp16: true                   # essential on T4 — halves VRAM
   compile: false
 
 logging:
-  wandb: false           # set to true to enable W&B tracking
+  wandb: false
   wandb_project: Physics2Finance
-  run_name: pretrain_fluid
+  run_name: pretrain_t4_vit_small
