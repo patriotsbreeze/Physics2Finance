@@ -168,6 +168,12 @@ def main(config_path: str = "configs/probe_config.yaml"):
         np.save(log_returns_path, all_log_returns)
         logger.info(f"Saved log_returns ({len(all_log_returns)} ticks) → {log_returns_path}")
 
+    test_log_returns = _collect_log_returns(test_ds)
+    if len(test_log_returns) > 0:
+        test_lr_path = output_dir.parent / "test_log_returns.npy"
+        np.save(test_lr_path, test_log_returns)
+        logger.info(f"Saved test_log_returns ({len(test_log_returns)} ticks) → {test_lr_path}")
+
     if train_ds is None:
         logger.error("No training data. Run scripts/download_data.sh and prepare financial data.")
         return
