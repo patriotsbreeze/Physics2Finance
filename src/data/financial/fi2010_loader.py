@@ -113,8 +113,11 @@ class FI2010Dataset(Dataset):
                 arr = np.loadtxt(fpath)
                 if arr.ndim == 1:
                     arr = arr.reshape(1, -1)
+                # FI-2010 files are stored (n_features, n_samples) — transpose to (n_samples, n_features)
+                if arr.shape[0] < arr.shape[1]:
+                    arr = arr.T
                 raw_arrays.append(arr)
-                logger.info(f"Loaded {fpath}: shape={arr.shape}")
+                logger.info(f"Loaded {fpath}: shape={arr.shape} (samples, features)")
             except Exception as e:
                 logger.error(f"Failed to load {fpath}: {e}")
 
