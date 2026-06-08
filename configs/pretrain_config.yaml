@@ -21,7 +21,7 @@ dino:
   momentum_teacher: 0.996
 
 training:
-  epochs: 200                  # 50 was too few — best ckpt was epoch 10, then collapse
+  epochs: 100                  # 30 warmup + 70 stable — minimum viable for physics features
   warmup_epochs: 5
   batch_size: 32               # T4 safe with vit_small + 6 crops + fp16
   base_lr: 0.0005
